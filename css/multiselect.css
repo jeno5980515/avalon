@@ -1,0 +1,40 @@
+/**
+ * Multiselect
+ * https://github.com/adampresley/multiselect
+ * version 0.0.2
+ *
+ * Author: Adam Presley
+ * License: MIT
+ * Copyright 2015 Adam Presley
+ */
+.multiselect-outer-div {
+	border: 1px solid #CCC;
+	box-shadow: 5px 5px 5px #CCC;
+	border-radius: 3px;
+}
+
+.multiselect-outer-div ul {
+	list-style: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+.multiselect-outer-div ul li {
+	cursor: default;
+	padding: 4px;
+	border-bottom: 1px solid #EEE;
+	display: list-item;
+	color: #7F8C8D;
+}
+
+.multiselect-outer-div ul li:hover {
+	background-color: #CCC;
+	text-decoration: none;
+	color: #FFFFFF;
+}
+
+.multiselect-li-selected {
+	background-color: #08C !important;
+	color: #FFFFFF !important;
+	text-decoration: none;
+}

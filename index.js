@@ -52,67 +52,74 @@
 			var number = data.number ;
 			var r = data.role ;
 			var index = room[number].role.indexOf(r) ;
+			room[number].role.push(r) ;
+			/*
 			if ( index === -1 ){
 				room[number].role.push(r) ;
 			} else {
 				room[number].role.splice(index, 1);
 				room[number].id.splice(index, 1);
 			}
+			*/
 			showRole(number);
-		})
+		});
 		socket.on("start", function (data){
 			var number = data.number ;
 			var user = data.user ;
 			if ( room[number].create !== user ){
 				socket.emit("start",{status:"fail"}) ;
 			} else {
-				var id = room[number].id;
-				var u = room[number].user ;
-				var newId = [] ;
-				var newU = [] ;
-				var maxNum = 4;  
-				var minNum = 0;  
-				while ( maxNum >= 0 ){
-					var n = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
-					newId.push(id[n]);
-					newU.push(u[n]);
-					id.splice(n, 1);
-					u.splice(n, 1);
-					maxNum -- ;
-				}
-				room[number].id = newId ;
-				room[number].user = newU ;
-				io.sockets.in(number).emit("rearrange",{users:room[number].user});
+				if ( room[number].user.length < 5 ){
+					io.sockets.in(number).emit('console',{console:"人數需要五個人以上。"}) ;
+				} else {
+					var id = room[number].id;
+					var u = room[number].user ;
+					var newId = [] ;
+					var newU = [] ;
+					var maxNum = 4;  
+					var minNum = 0;  
+					while ( maxNum >= 0 ){
+						var n = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
+						newId.push(id[n]);
+						newU.push(u[n]);
+						id.splice(n, 1);
+						u.splice(n, 1);
+						maxNum -- ;
+					}
+					room[number].id = newId ;
+					room[number].user = newU ;
+					io.sockets.in(number).emit("rearrange",{users:room[number].user});
 
-				room[number].c = [] ;
-				var a = ["梅林","刺客","好人","好人","壞人"] ;
-				room[number].amount = [2,3,2,3,3] ;
-				var maxNum = 4;  
-				var minNum = 0;  
-				while ( maxNum >= 0 ){
-					var n = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
-					room[number].c.push(a[n]) ;
-					a.splice(n, 1);
-					maxNum -- ;
-				}
-				var bArray = [] ;
-				for ( var i = 0 ; i < room[number].c.length ; i ++ ){
-					if ( room[number].c[i] === "刺客" || room[number].c[i] === "壞人"){
-						bArray.push(i) ;
+					room[number].c = [] ;
+					var a = ["梅林","刺客","好人","好人","壞人"] ;
+					room[number].amount = [2,3,2,3,3] ;
+					var maxNum = 4;  
+					var minNum = 0;  
+					while ( maxNum >= 0 ){
+						var n = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
+						room[number].c.push(a[n]) ;
+						a.splice(n, 1);
+						maxNum -- ;
 					}
-				}
-				for ( var i = 0 ; i < room[number].c.length ; i ++ ){
-					if ( room[number].c[i] === "梅林" || room[number].c[i] === "刺客" || room[number].c[i] === "壞人"){
-						clients[room[number].id[i]].emit("start",{c:room[number].c[i],status:"success",b:bArray}) ;
-					} else {
-						clients[room[number].id[i]].emit("start",{c:room[number].c[i],status:"success"}) ;
+					var bArray = [] ;
+					for ( var i = 0 ; i < room[number].c.length ; i ++ ){
+						if ( room[number].c[i] === "刺客" || room[number].c[i] === "壞人"){
+							bArray.push(i) ;
+						}
 					}
+					for ( var i = 0 ; i < room[number].c.length ; i ++ ){
+						if ( room[number].c[i] === "梅林" || room[number].c[i] === "刺客" || room[number].c[i] === "壞人"){
+							clients[room[number].id[i]].emit("start",{c:room[number].c[i],status:"success",b:bArray}) ;
+						} else {
+							clients[room[number].id[i]].emit("start",{c:room[number].c[i],status:"success"}) ;
+						}
+					}
+					io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].cap,success:room[number].successAmount,fail:room[number].failAmount});
+					io.sockets.in(number).emit('console',{console:"隊長正在選擇隊員。"});
+					clients[room[number].id[room[number].cap]].emit("caption",{amount:room[number].amount[room[number].round-1],users:room[number].user}) ;
 				}
-				io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].cap,success:room[number].successAmount,fail:room[number].failAmount});
-				io.sockets.in(number).emit('console',{console:"隊長正在選擇隊員。"})
-				clients[room[number].id[room[number].cap]].emit("caption",{amount:room[number].amount[room[number].round-1],users:room[number].user}) ;
 			}
-		})
+		});
 		socket.on("caption",function (data){
 			var number = data.number ;
 			room[number].mission = [] ;
@@ -121,7 +128,7 @@
 			} 
 			io.sockets.in(number).emit('chooseUser',{users:data.users}) ;
 			io.sockets.in(number).emit('console',{console:"隊長選擇好隊員了 請投票。"}) ;
-		})
+		});
 		socket.on("vote",function (data){
 			var number = data.number ;
 			var user = data.user ;

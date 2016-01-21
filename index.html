@@ -4,38 +4,48 @@
 <title>Avalon</title>
 <meta charset="UTF-8">
 <script src="https://cdn.socket.io/socket.io-1.4.3.js"></script>
+<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css"/>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="css/multiselect.css" />
+<script type="text/javascript" src="js/multiselect.js"></script>
 </head>
 <style>
 	#textArea{
-		width:95%;
-		height:20%;
-		position: fixed;
-		bottom:5%;
-		border: solid 2px black; 
 		overflow:auto;
+		height:20vh;
 	}
 	#textInputArea{
-		position: fixed;
-		bottom:10px;
+		
 	}
 	#userArea{
-		width:95%;
-		border: solid 2px black; 
+		padding: 0px;
 	}	
 	#roleArea{
-		width:95%;
-		border: solid 2px black; 
+		padding: 0px;
 	}
 	#consoleArea{
-		width:95%;
-		height:20%;
-		bottom:26%;
-		position: fixed;
+		overflow:auto; 
+		height:20vh;
+	}
+	.page{
+		padding: 0px;
+		margin: 0px;
+	}
+	#userInfoArea{
+		width:100vw;
+	}
+	#wordArea{
+		width: 100vw;
+	}
+	#eventArea{
+		width: 100vw;
+		display:block;
 		overflow:auto;
-		border: solid 2px black; 
+		min-height: 30vh;
 	}
 </style>
 <body>
+
 	<div id="loginPage" class="page">
 		<input placeholder="輸入你的暱稱" id="nameInput"></input>
 		<button id="loginButton">確認</button>
@@ -49,29 +59,38 @@
 			<button id="joinButton">進入房間</button>
 		</div>
 	</div>
-	<div id="gamePage" class="page">
-		<div id="numberDiv"></div>
-		<div id="textArea"></div>
-		<div id="userArea"></div>
-		<div id="roleArea"></div>
-		<div id="cArea"></div>
-		<div id="bArea"></div>
-		<div id="captionArea"></div>
-		<div id="roundArea"></div>
-		<div id="amountArea"></div>
-		<div id="voteArea"></div>
-		<div id="consoleArea"></div>
-		<div id="chooseVoteArea"></div>
-		<div id="successArea"></div>
-		<div id="failArea"></div>
-		<div id="missionArea"></div>
-		<div id="assArea"></div>
-		<div id="chooseUserArea"></div>
-		<div id="textInputArea">
-			<input placeholder="輸入你的訊息" id="textInput"></input>
-			<button id="textButton">送出</button>
+	<div id="gamePage" class="page" >
+		<header id="numberDiv" class="w3-container w3-teal"></header>
+		<div class="w3-row" id="userInfoArea">
+			<div id="userArea" class="w3-container w3-third w3-border"></div>
+			<div id="roleArea" class="w3-container w3-third w3-border"></div>
+			<div class="w3-container w3-third w3-border">
+				<ul class="w3-ul">
+					<li id="cArea" class="w3-container"></li>
+					<li id="captionArea" class="w3-container"></li>
+					<li id="roundArea" class="w3-container"></li>
+					<li id="amountArea" class="w3-container"></li>
+					<li id="sfvArea" class="w3-container"></li>
+					<li id="bArea" class="w3-container"></li>
+				</ul>
+			</div>
 		</div>
-		<button id="startButton">開始</button>
+		<div id="eventArea" class="w3-container">
+			<div id="chooseUserArea" class="w3-container"></div>
+			<div id="chooseVoteArea" class="w3-container"></div>
+			<div id="missionArea" class="w3-container"></div>
+			<div id="assArea" class="w3-container"></div>
+		</div>
+		<footer class="w3-row" id="wordArea">
+			<div id="consoleArea" class="w3-container w3-half w3-border"></div>
+			<div class="w3-container w3-half">
+				<div id="textArea" class="w3-container  w3-border"></div>
+				<div id="textInputArea" class="w3-container">
+					<input placeholder="輸入你的訊息" id="textInput"></input>
+					<button id="textButton">送出</button>
+				</div>
+			</div>
+		</footer>
 	</div>
 	<script src="js/client.js">
 </script>
