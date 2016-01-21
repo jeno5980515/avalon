@@ -1,5 +1,5 @@
 (function(){
-	var socket = io.connect('http://localhost:8080');
+	var socket = io.connect('http://localhost:5000');
 	var gb = null 
 	var roomNumber = null ;
 	var role = null ;
