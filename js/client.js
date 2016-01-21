@@ -1,5 +1,5 @@
 (function(){
-	var socket = io.connect('http://localhost:5000');
+	var socket = io.connect('http://my-avalon.herokuapp.com/');
 	var gb = null 
 	var roomNumber = null ;
 	var role = null ;
