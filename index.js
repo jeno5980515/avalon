@@ -5,11 +5,15 @@
 	var io = require('socket.io')(server);
 	var port = 8080 ;
 
-	server.listen(port, function () {
+	app.listen(port, function () {
 	  console.log('Server listening at port %d', port);
 	});
 
-	app.use(express.static(__dirname ));
+	//app.use(express.static(__dirname ));
+
+	app.get('/', function (req, res) {
+	  res.render('index.html');
+	});
 
 
 	var room = {} ;
