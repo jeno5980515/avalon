@@ -3,9 +3,26 @@
 	var app = express();
 	var server = require('http').createServer(app);
 	var io = require('socket.io').listen(server);
-	server.listen(process.env.PORT || 8080);
-	//server.listen(8080);
+	//server.listen(process.env.PORT || 8080);
+	server.listen(8080);
 	app.use(express.static(__dirname ));
+	var amountList = [0,1,2,3,4,
+		[2,3,2,3,3],
+		[2,3,4,3,2],
+		[2,3,3,4,4],
+		[3,4,4,5,5],
+		[3,4,4,5,5],
+		[3,4,4,5,5]
+	]
+
+	var bgamount = [0,1,2,3,4,
+		["梅林","好人","好人","刺客","壞人"],
+		["梅林","好人","好人","好人","刺客","壞人"],
+		["梅林","好人","好人","好人","刺客","壞人","壞人"],
+		["梅林","好人","好人","好人","好人","刺客","壞人","壞人"],
+		["梅林","好人","好人","好人","好人","好人","刺客","壞人","壞人"],
+		["梅林","好人","好人","好人","好人","好人","刺客","壞人","壞人","壞人"]
+	]
 
 
 	var room = {} ;
@@ -86,6 +103,13 @@
 				showRole(number,oldRole);
 			}
 		});
+		socket.on("resetRole",function (data){
+			var number = data.number ;
+			if ( room[number].user.length >= 5 ){
+				room[number].role = bgamount[room[number].user.length];
+				showRole(number);
+			}
+		});
 		socket.on("start", function (data){
 			var number = data.number ;
 			var user = data.user ;
@@ -103,7 +127,7 @@
 					var u = room[number].user ;
 					var newId = [] ;
 					var newU = [] ;
-					var maxNum = 4;  
+					var maxNum = room[number].user.length - 1 ;  
 					var minNum = 0;  
 					while ( maxNum >= 0 ){
 						var n = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
@@ -119,8 +143,8 @@
 
 					room[number].c = [] ;
 					var a = room[number].role.slice() ;
-					room[number].amount = [2,3,2,3,3] ;
-					var maxNum = 4;  
+					room[number].amount = amountList[room[number].user.length] ;
+					var maxNum = room[number].user.length - 1 ;  
 					var minNum = 0;  
 					while ( maxNum >= 0 ){
 						var n = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;

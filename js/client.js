@@ -1,6 +1,6 @@
 (function(){
-	var socket = io.connect('http://my-avalon.herokuapp.com/');
-	//var socket = io.connect('localhost:8080');
+	//var socket = io.connect('http://my-avalon.herokuapp.com/');
+	var socket = io.connect('localhost:8080');
 	var gb = null 
 	var roomNumber = null ;
 	var role = null ;
@@ -125,6 +125,7 @@
 			alert("加入失敗！");
 		} else {
 			var users = data.users ;
+			socket.emit("resetRole",{number:roomNumber}) ;
 			document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
 			if ( create === true ){
 				var button = document.createElement("button") ;
