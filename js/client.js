@@ -47,11 +47,29 @@
 		if ( document.getElementById("nameInput").value === "" ){
 			alert("請輸入暱稱！") ;
 		} else {
-			hide(document.getElementById("loginPage"));
-			show(document.getElementById("roomPage"));
-			userName = document.getElementById("nameInput").value ;
+			if (stripHTML(document.getElementById("nameInput").value) === true ){
+				alert("請輸入合法字元！")
+			} else {
+				hide(document.getElementById("loginPage"));
+				show(document.getElementById("roomPage"));
+				userName = document.getElementById("nameInput").value ;
+			}
 		}
 	});
+
+	function stripHTML(input) {
+		if ( input !== input.replace(/(<([^>]+)>)/ig,"") )
+			return true ; 
+		else 
+			return false ;
+		/*
+	    var output = '';
+	    if(typeof(input)=='string'){
+	        var output = input.replace(/(<([^>]+)>)/ig,"");
+	    }
+	    return output;
+	    */
+	}
 
 
 	document.getElementById("createButton").addEventListener("click",function(){
