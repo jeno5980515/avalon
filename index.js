@@ -276,12 +276,22 @@
 			}
 			if ( room[number].missionAmount >= room[number].mission.length ){
 				io.sockets.in(number).emit('console',{console:"成功："+(room[number].missionAmount-room[number].missionResult)+"，失敗："+room[number].missionResult}) ;
-				if ( room[number].missionResult === 0 ){
-					room[number].successAmount ++ ;
-					io.sockets.in(number).emit('console',{console:"任務成功。"}) ;
+				if ( room[number].round === 4 && room[number].user.length >= 7 ){
+					if ( room[number].missionResult < 2 ){
+						room[number].successAmount ++ ;
+						io.sockets.in(number).emit('console',{console:"任務成功。"}) ;
+					} else {
+						room[number].failAmount ++ ;
+						io.sockets.in(number).emit('console',{console:"任務失敗。"}) ;
+					}
 				} else {
-					room[number].failAmount ++ ;
-					io.sockets.in(number).emit('console',{console:"任務失敗。"}) ;
+					if ( room[number].missionResult === 0 ){
+						room[number].successAmount ++ ;
+						io.sockets.in(number).emit('console',{console:"任務成功。"}) ;
+					} else {
+						room[number].failAmount ++ ;
+						io.sockets.in(number).emit('console',{console:"任務失敗。"}) ;
+					}
 				}
 				if ( room[number].successAmount >= 3 ){
 					io.sockets.in(number).emit('console',{console:"好人獲勝。"}) ;
