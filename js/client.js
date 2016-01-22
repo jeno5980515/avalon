@@ -18,6 +18,31 @@
 		el.style.display = "inline-block" ;
 	};
 
+	document.getElementById("uploadImage").addEventListener("change",function(e){
+		e.preventDefault();
+		var file = this.files[0],
+		reader = new FileReader();
+		reader.onload = function (event) {
+			var img = new Image();
+			img.src = event.target.result;
+			userName = '<img height="20px" src="'+img.src+'"></img>' ;
+			hide(document.getElementById("loginPage"));
+			show(document.getElementById("roomPage"));
+		};
+		reader.readAsDataURL(file);
+		return false;
+	});
+
+	document.getElementById("loginImageButton").addEventListener("click",function(){
+		if ( document.getElementById("imageInput").value === "" ){
+			alert("請輸入網址！") ;
+		} else {
+			hide(document.getElementById("loginPage"));
+			show(document.getElementById("roomPage"));
+			userName = '<img height="20px" src="'+document.getElementById("imageInput").value+'"></img>' ;
+		}
+	});
+
 	document.getElementById("loginButton").addEventListener("click",function(){
 		if ( document.getElementById("nameInput").value === "" ){
 			alert("請輸入暱稱！") ;
@@ -94,7 +119,6 @@
 	});
 
 	var createRoom = function(){
-		var userName = document.getElementById("nameInput").value ;
 		socket.emit('create', { user : userName });
 		socket.on('create', function (data) {
 			if ( data.status === "success" ){
