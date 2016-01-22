@@ -1,6 +1,6 @@
 (function(){
-	var socket = io.connect('http://my-avalon.herokuapp.com/');
-	//var socket = io.connect('localhost:8080');
+	//var socket = io.connect('http://my-avalon.herokuapp.com/');
+	var socket = io.connect('localhost:8080');
 	var gb = null 
 	var roomNumber = null ;
 	var role = null ;
@@ -20,6 +20,34 @@
 			return ;
 		el.style.display = "inline-block" ;
 	};
+
+	socket.on("save",function (data){
+		console.log(data);
+		localStorage.socketId = data.id ;
+	})
+
+	socket.on("recover",function (data){
+		if ( data.status === "fail" ){
+			alert("回復失敗！") ;
+		} else {
+			hide(document.getElementById("loginPage"));
+			hide(document.getElementById("roomPage"));
+			var number = data.number ;
+			var user = data.user ;
+			userName = user ;
+			roomNumber = number ;
+			console.log(data);
+			document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
+		}
+	})
+
+	document.getElementById("recoverButton").addEventListener("click",function(){
+		if ( localStorage.socketId !== undefined ){
+			socket.emit("recover",{id:localStorage.socketId });
+		} else {
+			alert("沒有紀錄！") ;
+		}
+	})
 
 	document.getElementById("uploadImage").addEventListener("change",function(e){
 		e.preventDefault();
@@ -264,13 +292,21 @@
 	}); 
 
 	document.getElementById("textButton").addEventListener("click",function(){
-		socket.emit('message',{number:roomNumber,text:document.getElementById("textInput").value,user:userName}) ;
-		document.getElementById("textInput").value = "" ;
+		if (stripHTML(document.getElementById("textInput").value) === "true") {
+			alert("請輸入合法字元！") ;
+		} else {
+			socket.emit('message',{number:roomNumber,text:document.getElementById("textInput").value,user:userName}) ;
+			document.getElementById("textInput").value = "" ;
+		}
 	});
 
-
-	socket.on("start", function (data){
+	var startGame = function(data){
 		if ( data.status === "success" ){
+
+			document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
+			hide(document.getElementById("roomPage"));
+			show(document.getElementById("gamePage"));
+
 			var span = document.createElement("span") ;
 			span.innerHTML = data.c ;
 			document.getElementById("cArea").innerHTML = "你的角色是：" ;
@@ -304,6 +340,10 @@
 			create = false ;
 			setRoleList(data);
 		}
+	}
+	socket.on("start", function (data){
+		console.log(data);
+		startGame(data);
 	})
 	socket.on("caption",function (data){
 		var users = data.users ;
@@ -369,21 +409,23 @@
 			span.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[users[i]].innerHTML ;
 			document.getElementById("chooseUserArea").appendChild(span);
 		}
-		var y = document.createElement("button") ;
-		y.innerHTML = "贊成" ; 
-		var n = document.createElement("button") ;
-		n.innerHTML = "反對" ;
-		y.className = n.className = "w3-button w3-round" ;
-		document.getElementById("chooseVoteArea").appendChild(y);
-		document.getElementById("chooseVoteArea").appendChild(n);
-		y.addEventListener("click",function(){
-			socket.emit("vote",{number:roomNumber,choose:"y",user:userName}) ;
-			document.getElementById("chooseVoteArea").innerHTML = "" ;
-		});
-		n.addEventListener("click",function(){
-			socket.emit("vote",{number:roomNumber,choose:"n",user:userName}) ;
-			document.getElementById("chooseVoteArea").innerHTML = "" ;
-		});
+		if ( data.vote === undefined ){
+			var y = document.createElement("button") ;
+			y.innerHTML = "贊成" ; 
+			var n = document.createElement("button") ;
+			n.innerHTML = "反對" ;
+			y.className = n.className = "w3-button w3-round" ;
+			document.getElementById("chooseVoteArea").appendChild(y);
+			document.getElementById("chooseVoteArea").appendChild(n);
+			y.addEventListener("click",function(){
+				socket.emit("vote",{number:roomNumber,choose:"y",user:userName}) ;
+				document.getElementById("chooseVoteArea").innerHTML = "" ;
+			});
+			n.addEventListener("click",function(){
+				socket.emit("vote",{number:roomNumber,choose:"n",user:userName}) ;
+				document.getElementById("chooseVoteArea").innerHTML = "" ;
+			});
+		}
 	});
 	socket.on("voteResult",function (data){
 		console.log(data);
@@ -403,6 +445,7 @@
 		document.getElementById("userArea").appendChild(ul);
 	});
 	socket.on("status",function (data){
+		console.log(data);
 		var round = data.round ;
 		var amount = data.amount ;
 		var cap = data.cap ;
@@ -421,7 +464,7 @@
 		document.getElementById("amountArea").innerHTML += " " + amount ;
 		var capt = document.createElement("span");
 		capt.className = "w3-tag w3-orange w3-round" ;
-		capt.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[cap].innerHTML ;
+		capt.innerHTML = cap ;
 		document.getElementById("captionArea").innerHTML = "隊長："   ;
 		document.getElementById("captionArea").appendChild(capt);
 
