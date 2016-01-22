@@ -4,6 +4,7 @@
 	var server = require('http').createServer(app);
 	var io = require('socket.io').listen(server);
 	server.listen(process.env.PORT || 8080);
+	//server.listen(8080);
 	app.use(express.static(__dirname ));
 
 
@@ -26,7 +27,7 @@
 		socket.on("join",function (data){
 			var user = data.user ;
 			var number = data.number ;
-			if ( room[number] === undefined ){
+			if ( room[number] === undefined || room[number].start === true ){
 				socket.emit("join",{status:"fail"});
 			} else {
 				var users = room[number].user ;
@@ -49,19 +50,31 @@
 			}
 		});
 		socket.on("role",function (data){
-			var number = data.number ;
-			var r = data.role ;
-			var index = room[number].role.indexOf(r) ;
-			room[number].role.push(r) ;
-			/*
-			if ( index === -1 ){
+			if ( data.oldRole === undefined ){ 
+				var number = data.number ;
+				var r = data.role ;
+				var index = room[number].role.indexOf(r) ;
 				room[number].role.push(r) ;
+
+				showRole(number);
+				/*
+				if ( index === -1 ){
+					room[number].role.push(r) ;
+				} else {
+					room[number].role.splice(index, 1);
+					room[number].id.splice(index, 1);
+				}
+				*/
 			} else {
-				room[number].role.splice(index, 1);
-				room[number].id.splice(index, 1);
+				var oldRole = data.oldRole ;
+				var newRole = data.newRole ;
+				var number = data.number ;
+				var index = room[number].role.indexOf(oldRole) ;
+				room[number].role[index] = newRole ;
+				io.sockets.in(number).emit('console',{console:"室長將 " + oldRole + " 替換成 " + newRole }) ;
+
+				showRole(number,oldRole);
 			}
-			*/
-			showRole(number);
 		});
 		socket.on("start", function (data){
 			var number = data.number ;
@@ -72,6 +85,7 @@
 				if ( room[number].user.length < 5 ){
 					io.sockets.in(number).emit('console',{console:"人數需要五個人以上。"}) ;
 				} else {
+					room[number].start = true ;
 					var id = room[number].id;
 					var u = room[number].user ;
 					var newId = [] ;
@@ -91,7 +105,7 @@
 					io.sockets.in(number).emit("rearrange",{users:room[number].user});
 
 					room[number].c = [] ;
-					var a = ["梅林","刺客","好人","好人","壞人"] ;
+					var a = room[number].role.slice() ;
 					room[number].amount = [2,3,2,3,3] ;
 					var maxNum = 4;  
 					var minNum = 0;  
@@ -102,16 +116,32 @@
 						maxNum -- ;
 					}
 					var bArray = [] ;
+					var bArray2 = [] ;
+					var mArray = [] ;
 					for ( var i = 0 ; i < room[number].c.length ; i ++ ){
-						if ( room[number].c[i] === "刺客" || room[number].c[i] === "壞人"){
+						if ( room[number].c[i] === "刺客" || room[number].c[i] === "壞人"  ||  room[number].c[i] === "莫甘娜" ){
 							bArray.push(i) ;
+							bArray2.push(i) ;
+						} else if ( room[number].c[i] === "奧伯倫" ){
+							bArray.push(i) ;
+						} else if ( room[number].c[i] === "莫德雷德") {
+							bArray2.push(i) ;
 						}
 					}
 					for ( var i = 0 ; i < room[number].c.length ; i ++ ){
-						if ( room[number].c[i] === "梅林" || room[number].c[i] === "刺客" || room[number].c[i] === "壞人"){
-							clients[room[number].id[i]].emit("start",{c:room[number].c[i],status:"success",b:bArray}) ;
+						if ( room[number].c[i] === "梅林" || room[number].c[i] === "莫甘娜" ){
+							mArray.push(i) ;
+						}
+					}
+					for ( var i = 0 ; i < room[number].c.length ; i ++ ){
+						if ( room[number].c[i] === "梅林" ) {
+							clients[room[number].id[i]].emit("start",{c:room[number].c[i],status:"success",b:bArray,role:room[number].role}) ;
+						} else if ( room[number].c[i] === "刺客" || room[number].c[i] === "壞人" || room[number].c[i] === "莫甘娜" || room[number].c[i] === "莫德雷德") {
+							clients[room[number].id[i]].emit("start",{c:room[number].c[i],status:"success",b:bArray2,role:room[number].role}) ;
+						} else if ( room[number].c[i] === "派西維爾") {
+							clients[room[number].id[i]].emit("start",{c:room[number].c[i],status:"success",m:mArray,role:room[number].role}) ;
 						} else {
-							clients[room[number].id[i]].emit("start",{c:room[number].c[i],status:"success"}) ;
+							clients[room[number].id[i]].emit("start",{c:room[number].c[i],status:"success",role:room[number].role}) ;
 						}
 					}
 					io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].cap,success:room[number].successAmount,fail:room[number].failAmount});
@@ -200,7 +230,7 @@
 					var good = [] ;
 					var ass ;
 					for ( var i = 0 ; i < room[number].c.length ; i ++ ){
-						if ( room[number].c[i] === "壞人" || room[number].c[i] === "刺客" ){
+						if ( room[number].c[i] === "壞人" || room[number].c[i] === "刺客" || room[number].c[i] === "莫甘娜"  || room[number].c[i] === "莫德雷德" ){
 							io.sockets.in(number).emit('console',{console:room[number].user[i]+" 身份："+room[number].c[i]}) ;
 							if ( room[number].c[i] === "刺客"  ){
 								ass = i ;
@@ -252,8 +282,8 @@
 		});
 	});
 
-	var showRole = function(number){
-		io.sockets.in(number).emit('role', {role:room[number].role});
+	var showRole = function(number,oldRole){
+		io.sockets.in(number).emit('role', {role:room[number].role,oldRole:oldRole});
 	}
 
 	var makeRoom = function(creater){
@@ -280,6 +310,7 @@
 		room[number].successAmount = 0 ;
 		room[number].failAmount = 0 ;
 		room[number].user.push(creater) ;
+		room[number].start = false ;
 		return number ;
 	}
 })();

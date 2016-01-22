@@ -1,11 +1,14 @@
 (function(){
 	var socket = io.connect('http://my-avalon.herokuapp.com/');
-	//var socket = io.connect('localhost:5000');
+	//var socket = io.connect('localhost:8080');
 	var gb = null 
 	var roomNumber = null ;
 	var role = null ;
 	var userName = null ;
 	var create = false ;
+	var goodRoleList = ["派西維爾","好人"] ;
+	var badRoleList = ["莫甘娜","莫德雷德","奧伯倫","壞人"] ;
+	var roles = [] ;
 	var hide = self.hide = function(el){
 		if ( !el )
 			return ;
@@ -159,22 +162,99 @@
 		}); 
 	}
 
-	socket.on("role",function (data){
+	var setRoleList = function(data){
 		document.getElementById("roleArea").innerHTML = "" ;
 		var ul = document.createElement("ul") ;
-		ul.className = "w3-ul w3-card-4" ;
+		ul.className = "w3-ul w3-card-4 roleList" ;
+		if ( create === true ){
+			var oldRole = data.oldRole ;
+			if ( oldRole !== undefined ){
+				if ( getRoleKind(oldRole) === "good" ){
+					if ( goodRoleList.indexOf(oldRole) === -1 )
+						goodRoleList.push(oldRole);
+				} else if (getRoleKind(oldRole) === "bad" ) {
+					if ( badRoleList.indexOf(oldRole) === -1 )
+						badRoleList.push(oldRole);
+				}
+			}
+		}
 		for ( var i = 0 ; i < data.role.length ; i ++ ){
 			var div = document.createElement("li") ;
-			if ( data.role[i] === "好人" || data.role[i] === "梅林") {
+			if ( data.role[i] === "好人" || data.role[i] === "梅林" || data.role[i] === "派西維爾") {
 				div.className = "w3-blue" ;
 			} else {
 				div.className = "w3-red" ;
 			}
-			div.innerHTML = data.role[i] ;
+			var h = document.createElement("h5") ;
+			h.innerHTML = data.role[i] ;
+			div.appendChild(h);
+			
+			if ( create === true ){
+				div.className += "" ;
+				var roles = document.createElement("ul") ;
+				roles.className = "w3-ul" ;
+				if ( getRoleKind(data.role[i]) === "good" && data.role[i] !== "梅林" ){
+					for ( var j = 0 ; j < goodRoleList.length ; j ++ ){
+						if ( goodRoleList[j] !==  data.role[i]) {
+							var role = setRole("good",j,h) ;
+							roles.appendChild(role) ;
+						}
+					}
+				} else if ( getRoleKind(data.role[i]) === "bad" && data.role[i] !== "刺客" ){
+					for ( var j = 0 ; j < badRoleList.length ; j ++ ){
+						if ( badRoleList[j] !== data.role[i] ){
+							var role = setRole("bad",j,h) ;
+							roles.appendChild(role) ;
+						}
+					}
+				}
+				div.appendChild(roles);
+			}
+			
 			ul.appendChild(div);
 		}
 		document.getElementById("roleArea").appendChild(ul);
+	}
+	socket.on("role",function (data){
+		setRoleList(data);
 	})
+
+	var setRole = function(kind,index,li){
+		var role = document.createElement("li") ;
+		if ( kind === "good" ){
+			role.style.backgroundColor = "#330066" ;
+			role.innerHTML = goodRoleList[index] ;
+			role.addEventListener("click",function(){
+				socket.emit("role",{
+					oldRole : li.innerHTML ,
+					newRole : goodRoleList[index] ,
+					number : roomNumber 
+				})
+				goodRoleList.splice(index,1);
+			})
+		} else if ( kind === "bad" ){
+			role.style.backgroundColor = "#990000" ;
+			role.innerHTML = badRoleList[index] ;
+			role.addEventListener("click",function(){
+				socket.emit("role",{
+					oldRole : li.innerHTML ,
+					newRole : badRoleList[index] ,
+					number : roomNumber 
+				})
+				badRoleList.splice(index,1);
+			})
+		}
+
+		return role ;
+	}
+
+	var getRoleKind = function(src){
+		if ( src === "好人" || src === "梅林" || src === "派西維爾" ){
+			return "good" ;
+		} else if ( src === "莫甘娜" || src === "莫德雷德" || src === "奧伯倫" || src === "壞人" || src === "刺客" ){
+			return "bad" ;
+		}
+	};
 
 	socket.on('message', function (data) {
 		var text = document.createElement("div") ;
@@ -194,7 +274,7 @@
 			var span = document.createElement("span") ;
 			span.innerHTML = data.c ;
 			document.getElementById("cArea").innerHTML = "你的角色是：" ;
-			if ( data.c=== "梅林" || data.c === "好人" ){
+			if ( data.c=== "梅林" || data.c === "好人" || data.c=== "派西維爾"){
 				span.className = "w3-tag w3-blue w3-round" ;
 				gb = "g" ;
 			} else {
@@ -202,7 +282,7 @@
 				gb = "b" ;
 			}
 			document.getElementById("cArea").appendChild(span);
-			if (data.c === "梅林" || data.c === "刺客" || data.c === "壞人"){
+			if (data.c === "梅林" || (getRoleKind(data.c) === "bad" && data.c !== "奧伯倫") ){
 				document.getElementById("bArea").innerHTML = "壞人是："  ;
 				for ( var i = 0 ; i < data.b.length ; i ++ ){				
 					var span = document.createElement("span") ;
@@ -210,9 +290,19 @@
 					span.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[data.b[i]].innerHTML ;
 					document.getElementById("bArea").appendChild(span) ;
 				}
+			} else if ( data.c === "派西維爾" ){
+				document.getElementById("bArea").innerHTML = "梅林是："  ;
+				for ( var i = 0 ; i < data.m.length ; i ++ ){				
+					var span = document.createElement("span") ;
+					span.className = "w3-tag w3-round-large w3-blue" ;
+					span.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[data.m[i]].innerHTML ;
+					document.getElementById("bArea").appendChild(span) ;
+				}
 			}
 			addConsole("遊戲開始了！");
 			hide(document.getElementById("startButton"));
+			create = false ;
+			setRoleList(data);
 		}
 	})
 	socket.on("caption",function (data){
@@ -299,6 +389,7 @@
 		console.log(data);
 	});
 	socket.on("rearrange",function (data){
+
 		document.getElementById("userArea").innerHTML = "" ;
 		var users = data.users ;
 		var ul = document.createElement("ul") ;
@@ -308,6 +399,7 @@
 			u.innerHTML = users[i] ;
 			ul.appendChild(u) ;
 		}
+
 		document.getElementById("userArea").appendChild(ul);
 	});
 	socket.on("status",function (data){
