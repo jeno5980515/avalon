@@ -37,9 +37,13 @@
 		if ( document.getElementById("imageInput").value === "" ){
 			alert("請輸入網址！") ;
 		} else {
-			hide(document.getElementById("loginPage"));
-			show(document.getElementById("roomPage"));
-			userName = '<img height="20px" src="'+document.getElementById("imageInput").value+'"></img>' ;
+			if (stripHTML(document.getElementById("imageInput").value) === true ){
+				alert("請輸入合法字元！")
+			} else {
+				hide(document.getElementById("loginPage"));
+				show(document.getElementById("roomPage"));
+				userName = '<img height="20px" src="'+document.getElementById("imageInput").value+'"></img>' ;
+			}
 		}
 	});
 
