@@ -13,6 +13,7 @@
 	var gArray = [] ;
 	var bArray = [] ;
 	var mArray = [] ;
+	var missionArray = [] ;
 	var hide = self.hide = function(el){
 		if ( !el )
 			return ;
@@ -123,7 +124,6 @@
 		socket.emit("join",{user:userName,number:roomNumber}) ;
 	});
 	socket.on("godResult",function (data){
-		console.log(data);
 		document.getElementById("godArea").innerHTML = "" ;
 		var kind = data.kind ;
 		var index = data.index ;
@@ -462,7 +462,16 @@
 	});
 	socket.on("chooseUser",function (data){
 		var users = data.users ;
+		missionArray = users;			
+		var missionDivs = document.querySelectorAll(".mission-div");
+		for ( var i = 0 ; i < missionDivs.length ; i ++ ){
+			if ( users.indexOf(i) !== -1 ){
+				missionDivs[i].className = "mission-div fa fa-users fa-x" ;
+			}
+		}
 		document.getElementById("chooseUserArea").innerHTML = "" ;
+		document.getElementById("chooseVoteArea").innerHTML = "" ;
+		/*
 		var p = document.createElement("i") ;
 		p.className = "fa fa-male w3-xxxlarge" ;
 		document.getElementById("chooseUserArea").appendChild(p) ;
@@ -473,6 +482,7 @@
 			span.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[users[i]].innerHTML ;
 			document.getElementById("chooseUserArea").appendChild(span);
 		}
+		*/
 		if ( data.vote === undefined ){
 			var y = document.createElement("button") ;
 			y.innerHTML = "贊成" ; 
@@ -492,7 +502,15 @@
 		}
 	});
 	socket.on("voteResult",function (data){
-		console.log(data);
+		var votes = data.votes ; 
+		var voteDivs = document.querySelectorAll(".vote-div");
+		for ( var i = 0 ; i < voteDivs.length ; i ++ ){
+			if ( votes[i] === "y" ){
+				voteDivs[i].className = "vote-div fa fa-circle-o" ;
+			} else if ( votes[i] === "n" ){
+				voteDivs[i].className = "vote-div fa fa-close" ;
+			}
+		}
 	});
 	socket.on("rearrange",function (data){
 
@@ -560,7 +578,7 @@
 			document.getElementById("noticeArea").innerHTML = "" ;
 		}
 
-		/*
+		
 		document.getElementById("gameInfoArea").innerHTML = "";
 		for ( var i = 0 , j = 0 ; i < document.getElementById("userArea").childNodes[0].childNodes.length ; i ++ ){
 			var div ;
@@ -570,11 +588,13 @@
 				j ++ ;
 			}
 			var div2 = document.createElement("span") ;
+			div2.style.display = "inline-block" ;
 			var icon = document.createElement("i") ;
 			icon.className = "fa fa-male fa-5x" ;
-			var name = document.createElement("span") ;
-			name.className = "w3-tag w3-purple" ;
-			name.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[i] ;
+			var name = document.createElement("div") ;
+			name.className = "w3-tag w3-purple w3-round" ;
+			name.style.display = "block";
+			name.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[i].innerHTML ;
 			if ( bArray.length !== 0 ){
 				if ( bArray.indexOf(i) !== -1 ){
 					icon.style.color = "red" ;
@@ -585,14 +605,34 @@
 					icon.style.color = "purple" ;
 				}
 			} 
+			if ( parseInt(data.capIndex) === i ){
+				var di = document.createElement("div") ;
+				var star = document.createElement("i") ;
+				star.className = "fa fa-star fa-x" ;
+				di.appendChild(star);
+				div2.appendChild(di) ;
+			}
+
+			var di = document.createElement("div") ;
+			var miss = document.createElement("i") ;
+			miss.className = "mission-div"
+			di.appendChild(miss);
+			div2.appendChild(di) ;
+
+			var di = document.createElement("div") ;
+			var voteDiv = document.createElement("i") ;
+			voteDiv.className = "vote-div" ;
+			di.appendChild(voteDiv);
+			div2.appendChild(di) ;
+
 			div2.appendChild(name) ;
 			div2.appendChild(icon) ;
-			div.appendChild(div2);
+			document.getElementById("gameInfoArea").appendChild(div2);
 			if ( i % 3 == 2 || i === document.getElementById("userArea").childNodes[0].childNodes.length -1 ){
-				document.getElementById("gameInfoArea").appendChild(div) ;
+				//document.getElementById("gameInfoArea").appendChild(div) ;
 			}
 		}
-		*/
+		
 		
 	});
 	socket.on("ass",function (data){
