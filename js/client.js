@@ -1,11 +1,12 @@
 (function(){
-	var socket = io.connect('http://my-avalon.herokuapp.com/');
-	//var socket = io.connect('localhost:8080');
+	//var socket = io.connect('http://my-avalon.herokuapp.com/');
+	var socket = io.connect('localhost:8080');
 	var gb = null 
 	var roomNumber = null ;
 	var role = null ;
 	var userName = null ;
 	var create = false ;
+	var godSet = false ;
 	var goodRoleList = ["派西維爾","好人"] ;
 	var badRoleList = ["莫甘娜","莫德雷德","奧伯倫","壞人"] ;
 	var roles = [] ;
@@ -119,7 +120,21 @@
 		roomNumber = document.getElementById("roomInput").value ;
 		socket.emit("join",{user:userName,number:roomNumber}) ;
 	});
-
+	socket.on("godResult",function (data){
+		console.log(data);
+		document.getElementById("godArea").innerHTML = "" ;
+		var kind = data.kind ;
+		var index = data.index ;
+		var result = document.createElement("span");
+		if ( kind === "good" ){
+			result.className = "w3-tag w3-blue w3-round" ;
+		} else if ( kind === "bad" ){
+			result.className = "w3-tag w3-red w3-round" ;
+		}
+		result.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[index].innerHTML ;
+		document.getElementById("godResultArea").innerHTML = ""   ;
+		document.getElementById("godResultArea").appendChild(result);
+	})
 	socket.on("join",function (data){
 		if ( data.status === "fail" ){
 			alert("加入失敗！");
@@ -136,6 +151,19 @@
 					socket.emit("start",{user:userName,number:roomNumber});
 				})
 				document.getElementById("numberDiv").appendChild(button);
+				var god = document.createElement("button") ;
+				god.innerHTML = "湖中女神" ;
+				god.className = "w3-btn w3-round w3-indigo" ;
+				god.id = "godButton" ;
+				god.addEventListener("click",function(){
+					if ( godSet === true ){
+						godSet = false ;
+					} else {
+						godSet = true ;
+					}
+					socket.emit("godSet",{godSet:godSet,number:roomNumber});
+				})
+				document.getElementById("numberDiv").appendChild(god);
 			}
 			hide(document.getElementById("roomPage"));
 			show(document.getElementById("gamePage"));
@@ -376,6 +404,28 @@
 	socket.on("console",function (data){
 		addConsole(data.console);
 	});
+	socket.on("god",function (data){
+		var users = data.users ;
+		document.getElementById("godArea").innerHTML = "" ;
+		var select = document.createElement("select")  ;
+		select.size = users.length ;
+		for ( var i = 0 ; i < users.length ; i ++ ){
+			var option = document.createElement("option") ;
+			option.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[users[i]].innerHTML  ;
+			option.value = users[i] ;
+			select.appendChild(option) ; 
+		} 
+		document.getElementById("godArea").appendChild(select) ;
+		var button = document.createElement("button") ;
+		button.innerHTML = "查看" ;
+		button.className = "w3-button w3-round" ;
+		document.getElementById("godArea").appendChild(button);
+
+		button.addEventListener("click",function(){
+			var index = select.options[select.selectedIndex].value ;
+			socket.emit("god",{oldUser:userName,newUser:index,number:roomNumber});
+		})
+	});
 	socket.on("mission",function (data){
 		document.getElementById("missionArea").innerHTML = "" ;
 		var y = document.createElement("button") ;
@@ -453,6 +503,7 @@
 		var vote = data.vote ;
 		var success = data.success ;
 		var fail = data.fail ;
+		var godArray = data.godArray ;
 		var d = document.createElement("span") ;
 		d.className = "w3-teal w3-badge" ;
 		d.innerHTML = round ;
@@ -469,6 +520,14 @@
 		document.getElementById("captionArea").innerHTML = "隊長："   ;
 		document.getElementById("captionArea").appendChild(capt);
 
+		document.getElementById("nowGodArea").innerHTML = "女神：" ;
+		for ( var i = 0 ; i < godArray.length ; i ++ ){
+			var g = document.createElement("span") ;
+			g.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[godArray[i]].innerHTML ;
+			g.className = "w3-tag w3-teal w3-round" ;
+			document.getElementById("nowGodArea").appendChild(g);
+			document.getElementById("nowGodArea").innerHTML += "→";
+		}
 
 		document.getElementById("sfvArea").innerHTML = "";
 		var s = document.createElement("span") ;

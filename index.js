@@ -3,8 +3,8 @@
 	var app = express();
 	var server = require('http').createServer(app);
 	var io = require('socket.io').listen(server);
-	server.listen(process.env.PORT || 8080);
-	//server.listen(8080);
+	//server.listen(process.env.PORT || 8080);
+	server.listen(8080);
 	app.use(express.static(__dirname ));
 	var amountList = [0,1,2,3,4,
 		[2,3,2,3,3],
@@ -110,6 +110,17 @@
 				showRole(number);
 			}
 		});
+		socket.on("godSet",function (data){
+			var number = data.number;
+			var godSet = data.godSet ;
+			if ( room[number].god === false && godSet === true ){
+				room[number].god = true ;
+				io.sockets.in(number).emit('console',{console:"室長開啟湖中女神。"}) ;
+			} else if ( room[number].god === true && godSet === false ){
+				room[number].god = false ;
+				io.sockets.in(number).emit('console',{console:"室長關閉湖中女神。"}) ;
+			}
+		})
 		socket.on("start", function (data){
 			var number = data.number ;
 			var user = data.user ;
@@ -170,6 +181,8 @@
 							mArray.push(i) ;
 						}
 					}
+					room[number].godNumber = room[number].c.length - 1 ; 
+					room[number].godArray.push(room[number].c.length - 1) ;
 					for ( var i = 0 ; i < room[number].c.length ; i ++ ){
 						clients[room[number].id[i]].emit("save",{id:room[number].id[i]});
 						if ( room[number].c[i] === "梅林" ) {
@@ -182,7 +195,7 @@
 							clients[room[number].id[i]].emit("start",{c:room[number].c[i],status:"success",role:room[number].role}) ;
 						}
 					}
-					io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount});
+					io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount,godNumber:room[number].godNumber,godArray:room[number].godArray});
 					io.sockets.in(number).emit('console',{console:"隊長正在選擇隊員。"});
 					room[number].wait[room[number].cap] = "c" ;
 					clients[room[number].id[room[number].cap]].emit("caption",{amount:room[number].amount[room[number].round-1],users:room[number].user}) ;
@@ -251,7 +264,7 @@
 						if ( room[number].cap >= room[number].user.length ){
 							room[number].cap = 0 ;
 						}
-						io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount});
+						io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount,godNumber:room[number].godNumber,godArray:room[number].godArray });
 						io.sockets.in(number).emit('console',{console:"隊長正在選擇隊員。"});
 						room[number].wait[room[number].cap] = "c" ;
 						clients[room[number].id[room[number].cap]].emit("caption",{amount:room[number].amount[room[number].round-1],users:room[number].user}) ;
@@ -308,7 +321,7 @@
 							good.push({index:i,user:room[number].user[i]});
 						}
 					}
-					io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount});
+					io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount,godNumber:room[number].godNumber,godArray:room[number].godArray });
 					clients[room[number].id[ass]].emit("ass",{good:good}) ;
 					room[number].wait[ass] = "a" ;
 				} else if ( room[number].failAmount >= 3 ){
@@ -316,7 +329,7 @@
 					for ( var i = 0 ; i < room[number].c.length ; i ++ ){
 						io.sockets.in(number).emit('console',{console:room[number].user[i]+" 身份："+room[number].c[i]}) ;
 					}
-					io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount});
+					io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount,godNumber:room[number].godNumber,godArray:room[number].godArray });
 				} else {
 					room[number].round ++ ;
 					room[number].voteArray = [] ;
@@ -328,19 +341,57 @@
 					room[number].mission = [] ;
 					room[number].missionResult = 0 ;
 					room[number].missionAmount = 0 ;
-					io.sockets.in(number).emit('console',{console:"替換下一名隊長。"});
-					io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount});
-					io.sockets.in(number).emit('console',{console:"隊長正在選擇隊員。"});
-					room[number].wait[room[number].cap] = "c" ;
-					clients[room[number].id[room[number].cap]].emit("caption",{amount:room[number].amount[room[number].round-1],users:room[number].user}) ;
+					if ( room[number].god === true && room[number].role.length >= 7 && room[number].round >= 2 && room[number].round <= 4 ){
+						room[number].wait[room[number].godNumber] = "g" ;
+						io.sockets.in(number).emit('console',{console:room[number].user[room[number].godNumber]+" 正在使用湖中女神。"});
+						var g = [] ;
+						for ( var i = 0 ; i < room[number].user.length ; i ++ ){
+							var index = room[number].godArray.indexOf(i) ;
+							if ( index === -1 ){
+								g.push(i) ;
+							}
+						}
+						clients[room[number].id[room[number].godNumber]].emit("god",{users:g}) ;
+					} else {
+						io.sockets.in(number).emit('console',{console:"替換下一名隊長。"});
+						io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount,godNumber:room[number].godNumber,godArray:room[number].godArray });
+						io.sockets.in(number).emit('console',{console:"隊長正在選擇隊員。"});
+						room[number].wait[room[number].cap] = "c" ;
+						clients[room[number].id[room[number].cap]].emit("caption",{amount:room[number].amount[room[number].round-1],users:room[number].user}) ;
+					}
 				}
 			}
 
+		});
+		socket.on("god",function (data){
+			var oldUser = data.oldUser ;
+			var newIndex = parseInt(data.newUser) ;
+			var number = data.number ;
+			var oldIndex = room[number].godNumber ;
+			var newUser = room[number].user[newIndex] ;
+			var kind ;
+			room[number].wait[room[number].godNumber] = "n" ;
+			if ( room[number].role[newIndex] === "好人" || room[number].role[newIndex] === "梅林" || room[number].role[newIndex] === "派西維爾" ){
+				kind = "good"
+			} else if ( room[number].role[newIndex] === "莫甘娜" || room[number].role[newIndex] === "莫德雷德" || room[number].role[newIndex] === "奧伯倫" || room[number].role[newIndex] === "壞人" || room[number].role[newIndex] === "刺客" ){
+				kind = "bad" ;
+			}
+			clients[room[number].id[oldIndex]].emit("godResult",{kind:kind,index:newIndex}) ;
+			room[number].godNumber = newIndex ;
+			room[number].godArray.push(newIndex) ;
+			io.sockets.in(number).emit('console',{console:room[number].user[oldIndex] + " 查看了 " + room[number].user[newIndex] + " 的陣營。"});
+			io.sockets.in(number).emit('console',{console:"替換下一名隊長。"});
+			io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount,godNumber:room[number].godNumber,godArray:room[number].godArray });
+			io.sockets.in(number).emit('console',{console:"隊長正在選擇隊員。"});
+			room[number].wait[room[number].cap] = "c" ;
+			clients[room[number].id[room[number].cap]].emit("caption",{amount:room[number].amount[room[number].round-1],users:room[number].user}) ;
+		
 		});
 		socket.on("ass",function (data){
 			var user = data.user ;
 			var index = data.index ;
 			var number = data.number ;
+			io.sockets.in(number).emit('console',{console:"刺客選擇刺殺 "+room[number].user[index]}) ;
 			if ( room[number].c[index] === "梅林" ){
 				io.sockets.in(number).emit('console',{console:"刺中梅林！壞人獲勝！"}) ;
 			} else {
@@ -402,7 +453,7 @@
 					socket.emit("start",{c:room[number].c[index],status:"success",role:room[number].role}) ;
 				}
 				socket.emit("recover",{user:user,number:number,wait:room[number].wait}) ;
-				socket.emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount});
+				socket.emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount,godNumber:room[number].godNumber,godArray:room[number].godArray});
 				if ( room[number].wait[index] === "c" ){
 					socket.emit("caption",{amount:room[number].amount[room[number].round-1],users:room[number].user}) ;
 				} else if (room[number].wait[index] === "v"){
@@ -421,6 +472,18 @@
 						}
 					}
 					socket.emit("ass",{good:good}) ;
+				} else if ( room[number].wait[index] === "g" ){
+					var g = [] ;
+					for ( var i = 0 ; i < room[number].user.length ; i ++ ){
+						for ( var j = 0 ; j < room[number].godArray.length ; j ++ ){
+							if ( room[number].godArray[j] === i ){
+								break ;
+							} else if ( j === room[number].godArray.length - 1 ) {
+								g.push(i);
+							}
+						}
+					}
+					socket.emit("god",{users:g}) ;
 				}
 
 			}
@@ -455,6 +518,9 @@
 		room[number].successAmount = 0 ;
 		room[number].failAmount = 0 ;
 		room[number].wait = [] ;
+		room[number].god = false ;
+		room[number].godArray = [] ;
+		room[number].godNumber = 0 ;
 		room[number].user.push(creater) ;
 		room[number].start = false ;
 		return number ;
