@@ -564,8 +564,8 @@
 				div.className = "w3-quarter w3-container" ;
 				j ++ ;
 			}
-			var div2 = document.createElement("div") ;
-			div2.className = "w3-container w3-third w3-row" ;
+			var div2 = document.createElement("span") ;
+			div2.className = "w3-container" ;
 			var icon = document.createElement("i") ;
 			icon.className = "fa fa-male w3-xxxlarge" ;
 			div2.appendChild(icon) ;
@@ -575,6 +575,7 @@
 			}
 		}
 		*/
+		
 	});
 	socket.on("ass",function (data){
 		var good = data.good ;

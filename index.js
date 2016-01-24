@@ -212,6 +212,7 @@
 							clients[room[number].id[i]].emit("start",{c:room[number].c[i],status:"success",role:room[number].role}) ;
 						}
 					}
+					io.sockets.in(number).emit('console',{console:"隊長是 " +room[number].user[room[number].cap]}) ;
 					io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount,godNumber:room[number].godNumber,godArray:room[number].godArray});
 					io.sockets.in(number).emit('console',{console:"隊長正在選擇隊員。"});
 					room[number].wait[room[number].cap] = "c" ;
@@ -225,11 +226,14 @@
 			for ( var i = 0 ; i < room[number].user.length ; i ++ ){
 				room[number].wait[i] = "n" ;
 			}
+			var list = "隊員：" ;
 			for ( var i = 0 ; i < data.users.length ; i ++ ){
+				list += room[number].user[data.users[i]] + " " ;
 				room[number].mission.push(data.users[i]) ;
 			} 
 			io.sockets.in(number).emit('chooseUser',{users:data.users}) ;
 			io.sockets.in(number).emit('console',{console:"隊長選擇好隊員了 請投票。"}) ;
+			io.sockets.in(number).emit('console',{console:list}) ;
 			for ( var i = 0 ; i < room[number].user.length ; i ++ ){
 				room[number].wait[i] = "v" ;
 			}
@@ -268,10 +272,9 @@
 					}
 
 				} else {
-					io.sockets.in(number).emit('console',{console:"贊成未過半！隊長替換成下一位玩家！"}) ;
 					room[number].vote ++ ;
 					if ( room[number].vote > 5 ){
-						io.sockets.in(number).emit('console',{console:"壞人獲勝！"}) ;
+						io.sockets.in(number).emit('console',{console:"投票超過五次！壞人獲勝！"}) ;
 					} else {
 						if ( room[number].vote === 5 ) {
 							io.sockets.in(number).emit('console',{console:"注意！這是最後一次投票！"}) ;
@@ -281,6 +284,7 @@
 						if ( room[number].cap >= room[number].user.length ){
 							room[number].cap = 0 ;
 						}
+						io.sockets.in(number).emit('console',{console:"贊成未過半！隊長替換成 " +room[number].user[room[number].cap]}) ;
 						io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount,godNumber:room[number].godNumber,godArray:room[number].godArray });
 						io.sockets.in(number).emit('console',{console:"隊長正在選擇隊員。"});
 						room[number].wait[room[number].cap] = "c" ;
@@ -370,7 +374,7 @@
 						}
 						clients[room[number].id[room[number].godNumber]].emit("god",{users:g}) ;
 					} else {
-						io.sockets.in(number).emit('console',{console:"替換下一名隊長。"});
+						io.sockets.in(number).emit('console',{console:"隊長替換成 " +room[number].user[room[number].cap]}) ;
 						io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount,godNumber:room[number].godNumber,godArray:room[number].godArray });
 						io.sockets.in(number).emit('console',{console:"隊長正在選擇隊員。"});
 						room[number].wait[room[number].cap] = "c" ;
@@ -397,7 +401,7 @@
 			room[number].godNumber = newIndex ;
 			room[number].godArray.push(newIndex) ;
 			io.sockets.in(number).emit('console',{console:room[number].user[oldIndex] + " 查看了 " + room[number].user[newIndex] + " 的陣營。"});
-			io.sockets.in(number).emit('console',{console:"替換下一名隊長。"});
+			io.sockets.in(number).emit('console',{console:"隊長替換成 " +room[number].user[room[number].cap]}) ;
 			io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount,godNumber:room[number].godNumber,godArray:room[number].godArray });
 			io.sockets.in(number).emit('console',{console:"隊長正在選擇隊員。"});
 			room[number].wait[room[number].cap] = "c" ;
