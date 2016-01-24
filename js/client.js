@@ -1,6 +1,6 @@
 (function(){
-	//var socket = io.connect('http://my-avalon.herokuapp.com/');
-	var socket = io.connect('localhost:8080');
+	var socket = io.connect('http://my-avalon.herokuapp.com/');
+	//var socket = io.connect('localhost:8080');
 	var gb = null 
 	var roomNumber = null ;
 	var role = null ;
@@ -10,6 +10,9 @@
 	var goodRoleList = ["派西維爾","好人"] ;
 	var badRoleList = ["莫甘娜","莫德雷德","奧伯倫","壞人"] ;
 	var roles = [] ;
+	var gArray = [] ;
+	var bArray = [] ;
+	var mArray = [] ;
 	var hide = self.hide = function(el){
 		if ( !el )
 			return ;
@@ -357,6 +360,7 @@
 			document.getElementById("cArea").appendChild(span);
 			if (data.c === "梅林" || (getRoleKind(data.c) === "bad" && data.c !== "奧伯倫") ){
 				document.getElementById("bArea").innerHTML = "壞人是："  ;
+				bArray = data.b ;
 				for ( var i = 0 ; i < data.b.length ; i ++ ){				
 					var span = document.createElement("span") ;
 					span.className = "w3-tag w3-round-large w3-red" ;
@@ -364,6 +368,7 @@
 					document.getElementById("bArea").appendChild(span) ;
 				}
 			} else if ( data.c === "派西維爾" ){
+				mArray = data.m ;
 				document.getElementById("bArea").innerHTML = "梅林是："  ;
 				for ( var i = 0 ; i < data.m.length ; i ++ ){				
 					var span = document.createElement("span") ;
@@ -565,9 +570,22 @@
 				j ++ ;
 			}
 			var div2 = document.createElement("span") ;
-			div2.className = "w3-container" ;
 			var icon = document.createElement("i") ;
-			icon.className = "fa fa-male w3-xxxlarge" ;
+			icon.className = "fa fa-male fa-5x" ;
+			var name = document.createElement("span") ;
+			name.className = "w3-tag w3-purple" ;
+			name.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[i] ;
+			if ( bArray.length !== 0 ){
+				if ( bArray.indexOf(i) !== -1 ){
+					icon.style.color = "red" ;
+				}
+			} 
+			if ( mArray.length !== 0 ){
+				if ( mArray.indexOf(i) !== -1 ){
+					icon.style.color = "purple" ;
+				}
+			} 
+			div2.appendChild(name) ;
 			div2.appendChild(icon) ;
 			div.appendChild(div2);
 			if ( i % 3 == 2 || i === document.getElementById("userArea").childNodes[0].childNodes.length -1 ){
