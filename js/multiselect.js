@@ -156,7 +156,7 @@
 		var createItem = function(index, itemData) {
 			var listItem = document.createElement("li");
 
-			listItem.textContent = itemData.text;
+			listItem.innerHTML = itemData.text;
 			listItem.setAttribute("data-value", itemData.value);
 			listItem.setAttribute("data-index", index);
 

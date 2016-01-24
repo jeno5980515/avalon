@@ -3,8 +3,8 @@
 	var app = express();
 	var server = require('http').createServer(app);
 	var io = require('socket.io').listen(server);
-	server.listen(process.env.PORT || 8080);
-	//server.listen(8080);
+	//server.listen(process.env.PORT || 8080);
+	server.listen(8080);
 	app.use(express.static(__dirname ));
 	var amountList = [0,1,2,3,4,
 		[2,3,2,3,3],
@@ -58,11 +58,28 @@
 				users.push(user);
 		   		room[number].id.push(socket.id) ;
 				socket.join(number);
-				io.sockets.in(number).emit("join",{status:"success",users:users,"user":user});
+				io.sockets.in(number).emit("join",{status:"success",users:users,"user":user,number:number});
 				showRole(number);
 			}
 		});
-
+		socket.on('disconnect', function() {
+			if ( Users[socket.id] !== undefined ){
+				var number = Users[socket.id].number  ;
+				if ( room[number].start === false ){
+					var index = room[number].id.indexOf(socket.id) ;
+					var user = room[number].user[index] ;
+					room[number].user.splice(index,1) ;
+					room[number].id.splice(index,1) ;
+					socket.leave(number);
+					io.sockets.in(number).emit("leave",{status:"success",users:room[number].user,"user":user,number:number});
+					showRole(number);
+				} else {
+					var index = room[number].id.indexOf(socket.id) ;
+					var user = room[number].user[index] ;
+					io.sockets.in(number).emit('console',{console:user+" 斷線，請等候回復。" }) ;
+				}
+			} 
+		});
 		socket.on('leave', function (data) {
 			var user = data.user ;
 			var number = data.number ;
@@ -423,7 +440,7 @@
 				socket.emit("save",{id:socket.id});
 				var users = room[number].user ;
 				socket.join(number);
-				io.sockets.in(number).emit("join",{status:"success",users:users,"user":user});
+				io.sockets.in(number).emit("join",{status:"success",users:users,"user":user,number:number});
 				showRole(number);
 				var bArray = [] ;
 				var bArray2 = [] ;

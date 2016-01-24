@@ -1,6 +1,6 @@
 (function(){
-	var socket = io.connect('http://my-avalon.herokuapp.com/');
-	//var socket = io.connect('localhost:8080');
+	//var socket = io.connect('http://my-avalon.herokuapp.com/');
+	var socket = io.connect('localhost:8080');
 	var gb = null 
 	var roomNumber = null ;
 	var role = null ;
@@ -23,7 +23,6 @@
 	};
 
 	socket.on("save",function (data){
-		console.log(data);
 		localStorage.socketId = data.id ;
 	})
 
@@ -37,7 +36,6 @@
 			var user = data.user ;
 			userName = user ;
 			roomNumber = number ;
-			console.log(data);
 			document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
 		}
 	})
@@ -49,7 +47,7 @@
 			alert("沒有紀錄！") ;
 		}
 	})
-
+	/*
 	document.getElementById("uploadImage").addEventListener("change",function(e){
 		e.preventDefault();
 		var file = this.files[0],
@@ -64,6 +62,7 @@
 		reader.readAsDataURL(file);
 		return false;
 	});
+	*/
 
 	document.getElementById("loginImageButton").addEventListener("click",function(){
 		if ( document.getElementById("imageInput").value === "" ){
@@ -140,7 +139,9 @@
 			alert("加入失敗！");
 		} else {
 			var users = data.users ;
-			socket.emit("resetRole",{number:roomNumber}) ;
+			var number = data.number ;
+			roomNumber = number ;
+			socket.emit("resetRole",{number:number}) ;
 			document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
 			if ( create === true ){
 				var button = document.createElement("button") ;
@@ -193,11 +194,14 @@
 		document.getElementById("consoleArea").appendChild(d) ;
 
 		document.getElementById("userArea").innerHTML = "" ;
+		var ul = document.createElement("ul") ;
+		ul.className = "w3-ul w3-card-4" ;
 		for ( var i = 0 ; i < users.length ; i ++ ){
-			var u = document.createElement("div") ;
+			var u = document.createElement("li") ;
 			u.innerHTML = users[i] ;
-			document.getElementById("userArea").appendChild(u) ;
+			ul.appendChild(u) ;
 		}
+		document.getElementById("userArea").appendChild(ul);
 	});
 
 	var createRoom = function(){
@@ -336,7 +340,6 @@
 
 	var startGame = function(data){
 		if ( data.status === "success" ){
-
 			document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
 			hide(document.getElementById("roomPage"));
 			show(document.getElementById("gamePage"));
@@ -373,10 +376,10 @@
 			hide(document.getElementById("startButton"));
 			create = false ;
 			setRoleList(data);
+
 		}
 	}
 	socket.on("start", function (data){
-		console.log(data);
 		startGame(data);
 	})
 	socket.on("caption",function (data){
@@ -501,7 +504,6 @@
 		document.getElementById("userArea").appendChild(ul);
 	});
 	socket.on("status",function (data){
-		console.log(data);
 		var round = data.round ;
 		var amount = data.amount ;
 		var cap = data.cap ;
@@ -547,12 +549,32 @@
 		document.getElementById("sfvArea").appendChild(s);
 		document.getElementById("sfvArea").appendChild(f);
 		document.getElementById("sfvArea").appendChild(v);
-		console.log(document.getElementById("userArea").childNodes.length);
 		if ( parseInt(round) === 4 && document.getElementById("userArea").childNodes[0].childNodes.length >= 7 ){
 			document.getElementById("noticeArea").innerHTML = "本回合需要兩個失敗才會任務失敗！" ;
 		} else {
 			document.getElementById("noticeArea").innerHTML = "" ;
 		}
+
+		/*
+		document.getElementById("gameInfoArea").innerHTML = "";
+		for ( var i = 0 , j = 0 ; i < document.getElementById("userArea").childNodes[0].childNodes.length ; i ++ ){
+			var div ;
+			if ( i % 3 === 0 ){
+				div = document.createElement("div") ;
+				div.className = "w3-quarter w3-container" ;
+				j ++ ;
+			}
+			var div2 = document.createElement("div") ;
+			div2.className = "w3-container w3-third w3-row" ;
+			var icon = document.createElement("i") ;
+			icon.className = "fa fa-male w3-xxxlarge" ;
+			div2.appendChild(icon) ;
+			div.appendChild(div2);
+			if ( i % 3 == 2 || i === document.getElementById("userArea").childNodes[0].childNodes.length -1 ){
+				document.getElementById("gameInfoArea").appendChild(div) ;
+			}
+		}
+		*/
 	});
 	socket.on("ass",function (data){
 		var good = data.good ;
