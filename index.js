@@ -371,9 +371,9 @@
 			var newUser = room[number].user[newIndex] ;
 			var kind ;
 			room[number].wait[room[number].godNumber] = "n" ;
-			if ( room[number].role[newIndex] === "好人" || room[number].role[newIndex] === "梅林" || room[number].role[newIndex] === "派西維爾" ){
+			if ( room[number].c[newIndex] === "好人" || room[number].c[newIndex] === "梅林" || room[number].c[newIndex] === "派西維爾" ){
 				kind = "good"
-			} else if ( room[number].role[newIndex] === "莫甘娜" || room[number].role[newIndex] === "莫德雷德" || room[number].role[newIndex] === "奧伯倫" || room[number].role[newIndex] === "壞人" || room[number].role[newIndex] === "刺客" ){
+			} else if ( room[number].c[newIndex] === "莫甘娜" || room[number].c[newIndex] === "莫德雷德" || room[number].c[newIndex] === "奧伯倫" || room[number].c[newIndex] === "壞人" || room[number].c[newIndex] === "刺客" ){
 				kind = "bad" ;
 			}
 			clients[room[number].id[oldIndex]].emit("godResult",{kind:kind,index:newIndex}) ;

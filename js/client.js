@@ -215,6 +215,7 @@
 				socket.emit("role",{ role : "好人" , number : roomNumber });
 				socket.emit("role",{ role : "刺客" , number : roomNumber });
 				socket.emit("role",{ role : "壞人" , number : roomNumber });
+
 			} 
 		}); 
 	}
@@ -319,7 +320,11 @@
 		document.getElementById("textArea").appendChild(text);
 		document.getElementById("textArea").scrollTop = document.getElementById("textArea").scrollHeight;
 	}); 
-
+	document.getElementById("textInput").addEventListener("keypress",function(e){
+		if(e.keyCode === 13){ 
+			document.getElementById("textButton").click();
+		}
+	})
 	document.getElementById("textButton").addEventListener("click",function(){
 		if (stripHTML(document.getElementById("textInput").value) === "true") {
 			alert("請輸入合法字元！") ;
@@ -542,6 +547,12 @@
 		document.getElementById("sfvArea").appendChild(s);
 		document.getElementById("sfvArea").appendChild(f);
 		document.getElementById("sfvArea").appendChild(v);
+		console.log(document.getElementById("userArea").childNodes.length);
+		if ( parseInt(round) === 4 && document.getElementById("userArea").childNodes[0].childNodes.length >= 7 ){
+			document.getElementById("noticeArea").innerHTML = "本回合需要兩個失敗才會任務失敗！" ;
+		} else {
+			document.getElementById("noticeArea").innerHTML = "" ;
+		}
 	});
 	socket.on("ass",function (data){
 		var good = data.good ;
