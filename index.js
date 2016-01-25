@@ -123,6 +123,7 @@
 		});
 		socket.on("resetRole",function (data){
 			var number = data.number ;
+			clients[room[number].createId].emit("resetRole",{role:room[number].role});
 			if ( room[number].user.length >= 5 ){
 				room[number].role = bgamount[room[number].user.length];
 				showRole(number);

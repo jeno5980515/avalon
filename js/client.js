@@ -8,8 +8,10 @@
 	var create = false ;
 	var creater = false ;
 	var godSet = false ;
+	var goodRoleList2 =  ["派西維爾","好人"] ;
 	var goodRoleList = ["派西維爾","好人"] ;
 	var badRoleList = ["莫甘娜","莫德雷德","奧伯倫","壞人"] ;
+	var badRoleList2 = ["莫甘娜","莫德雷德","奧伯倫","壞人"] ;
 	var roles = [] ;
 	var gArray = [] ;
 	var bArray = [] ;
@@ -138,6 +140,11 @@
 		document.getElementById("godResultArea").innerHTML = ""   ;
 		document.getElementById("godResultArea").appendChild(result);
 	})
+	socket.on("resetRole",function (data){
+		badRoleList = badRoleList2.slice(0) ;
+		goodRoleList = goodRoleList2.slice(0) ;
+		setRoleList(data);
+	})
 	socket.on("join",function (data){
 		if ( data.status === "fail" ){
 			alert("加入失敗！");
@@ -229,7 +236,7 @@
 		}); 
 	}
 	socket.on("restart", function (data){
-
+		document.getElementById("bArea").innerHTML = "" ;
 		document.getElementById("gameInfoArea").innerHTML = "" ;
 		document.getElementById("restartArea").innerHTML = "" ;
 		if ( creater === true ){
