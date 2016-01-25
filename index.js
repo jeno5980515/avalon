@@ -33,6 +33,7 @@
 	    socket.on('create', function (data) {
 	    	var u = data.user ;
 	    	var number = makeRoom(u) ;
+	    	room[number].createId = socket.id ;
 			Users[socket.id] = {} ;
 			Users[socket.id].user = u ;
 			Users[socket.id].number = number ;
@@ -138,6 +139,31 @@
 				io.sockets.in(number).emit('console',{console:"室長關閉湖中女神。"}) ;
 			}
 		})
+		socket.on("restart", function (data){
+
+			var number = data.number ;
+			room[number].role = [] ;
+			room[number].c = [] ;
+			room[number].cap = 0 ;
+			room[number].round = 1 ;
+			room[number].vote = 1 ;
+			room[number].voteArray = [] ;
+			room[number].amount = [] ;
+			room[number].mission = [] ;
+			room[number].missionResult = 0 ;
+			room[number].missionAmount = 0 ;
+			room[number].successAmount = 0 ;
+			room[number].failAmount = 0 ;
+			room[number].wait = [] ;
+			room[number].god = false ;
+			room[number].godArray = [] ;
+			room[number].godNumber = 0 ;
+			room[number].start = false ;
+			room[number].role = bgamount[room[number].user.length];
+			io.sockets.in(number).emit("console",{console:"回到房間"});
+			io.sockets.in(number).emit("restart",{status:"success",users:room[number].user,number:number});
+			showRole(number);
+		});
 		socket.on("start", function (data){
 			var number = data.number ;
 			var user = data.user ;
@@ -285,6 +311,7 @@
 					room[number].vote ++ ;
 					if ( room[number].vote > 5 ){
 						io.sockets.in(number).emit('console',{console:"投票超過五次！壞人獲勝！"}) ;
+						clients[room[number].createId].emit("gameover","gameover") ;
 					} else {
 						if ( room[number].vote === 5 ) {
 							io.sockets.in(number).emit('console',{console:"注意！這是最後一次投票！"}) ;
@@ -362,6 +389,7 @@
 					for ( var i = 0 ; i < room[number].c.length ; i ++ ){
 						io.sockets.in(number).emit('console',{console:room[number].user[i]+" 身份："+room[number].c[i]}) ;
 					}
+					clients[room[number].createId].emit("gameover","gameover") ;
 					io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount,godNumber:room[number].godNumber,godArray:room[number].godArray,capIndex:room[number].cap });
 				} else {
 					room[number].round ++ ;
@@ -430,11 +458,13 @@
 			} else {
 				io.sockets.in(number).emit('console',{console:"刺殺失敗！好人獲勝！"}) ;
 			}
+			clients[room[number].createId].emit("gameover","gameover") ;
 			for ( var i = 0 ; i < room[number].c.length ; i ++ ){
 				if (room[number].c[i] !== "壞人" || room[number].c[i] !== "刺客" )
 					io.sockets.in(number).emit('console',{console:room[number].user[i]+" 身份："+room[number].c[i]}) ;
 			}
 		});
+
 		socket.on("recover",function (data){
 			var socketId = data.id ;
 			if ( clients[socketId] === undefined ){

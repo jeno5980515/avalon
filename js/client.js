@@ -6,6 +6,7 @@
 	var role = null ;
 	var userName = null ;
 	var create = false ;
+	var creater = false ;
 	var godSet = false ;
 	var goodRoleList = ["派西維爾","好人"] ;
 	var badRoleList = ["莫甘娜","莫德雷德","奧伯倫","壞人"] ;
@@ -212,6 +213,7 @@
 		socket.on('create', function (data) {
 			if ( data.status === "success" ){
 				create = true ;
+				creater = true ;
 				roomNumber = data.number ;
 				document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
 				hide(document.getElementById("roomPage"));
@@ -226,7 +228,65 @@
 			} 
 		}); 
 	}
+	socket.on("restart", function (data){
 
+		document.getElementById("gameInfoArea").innerHTML = "" ;
+		document.getElementById("restartArea").innerHTML = "" ;
+		if ( creater === true ){
+			create = true ;
+		}
+		var users = data.users ;
+		var number = data.number ;
+		roomNumber = number ;
+		socket.emit("resetRole",{number:number}) ;
+		document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
+		if ( create === true ){
+			var button = document.createElement("button") ;
+			button.innerHTML = "開始" ;
+			button.className = "w3-btn w3-round w3-indigo" ;
+			button.id = "startButton" ;
+			button.addEventListener("click",function(){
+				socket.emit("start",{user:userName,number:roomNumber});
+			})
+			document.getElementById("numberDiv").appendChild(button);
+			var god = document.createElement("button") ;
+			god.innerHTML = "湖中女神" ;
+			god.className = "w3-btn w3-round w3-indigo" ;
+			god.id = "godButton" ;
+			god.addEventListener("click",function(){
+				if ( godSet === true ){
+					godSet = false ;
+				} else {
+					godSet = true ;
+				}
+				socket.emit("godSet",{godSet:godSet,number:roomNumber});
+			})
+			document.getElementById("numberDiv").appendChild(god);
+		}
+		hide(document.getElementById("roomPage"));
+		show(document.getElementById("gamePage"));
+		document.getElementById("userArea").innerHTML = "" ;
+
+		var ul = document.createElement("ul") ;
+		ul.className = "w3-ul w3-card-4" ;
+		for ( var i = 0 ; i < users.length ; i ++ ){
+			var u = document.createElement("li") ;
+			u.innerHTML = users[i] ;
+			ul.appendChild(u) ;
+		}
+		document.getElementById("userArea").appendChild(ul);
+	})
+	socket.on("gameover" ,function (data){
+		if ( creater === true ){
+			var restart = document.createElement("button") ;
+			restart.className = "w3-button w3-round" ;
+			restart.innerHTML = "重新開始" ;
+			restart.addEventListener("click",function(){
+				socket.emit("restart",{number:roomNumber}) ;
+			})
+			document.getElementById("restartArea").appendChild(restart) ;
+		}
+	});
 	var setRoleList = function(data){
 		document.getElementById("roleArea").innerHTML = "" ;
 		var ul = document.createElement("ul") ;
@@ -343,6 +403,9 @@
 
 	var startGame = function(data){
 		if ( data.status === "success" ){
+			bArray = [] ;
+			mArray = [] ;
+			gArray = [] ;
 			document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
 			hide(document.getElementById("roomPage"));
 			show(document.getElementById("gamePage"));
