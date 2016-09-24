@@ -3,8 +3,8 @@
 	var app = express();
 	var server = require('http').createServer(app);
 	var io = require('socket.io').listen(server);
-	server.listen(process.env.PORT || 8080);
-	//server.listen(8080);
+	//server.listen(process.env.PORT || 8080);
+	server.listen(8080);
 	app.use(express.static(__dirname ));
 	var amountList = [0,1,2,3,4,
 		[2,3,2,3,3],
@@ -78,6 +78,8 @@
 		socket.on('disconnect', function() {
 			if ( Users[socket.id] !== undefined ){
 				var number = Users[socket.id].number  ;
+				if ( room[number] !== undefined )
+					room[number].disconnectCount ++ ;
 				if ( room[number].start === false ){
 					var index = room[number].id.indexOf(socket.id) ;
 					var user = room[number].user[index] ;
@@ -89,8 +91,10 @@
 					if ( room[number].create === Users[socket.id].user ){
 						if ( room[number].user.length !== 0 ){
 							room[number].create = room[number].user[0] ;
-							io.sockets.in(number).emit('console',{console: "室長替換成 "+ room[number].user[0] }) ;
+							io.sockets.in(number).emit('console',{console: "室長替換成 "+ room[number].user[0] , notify : true  }) ;
 							clients[room[number].id[0]].emit('changeCreater',{});
+							resetRole(number);
+							showRole(number);
 							io.sockets.in(number).emit("restart",{status:"success",users:room[number].user,number:number});
 						}  else {
 							delete room[number] ;
@@ -100,7 +104,11 @@
 				} else {
 					var index = room[number].id.indexOf(socket.id) ;
 					var user = room[number].user[index] ;
-					io.sockets.in(number).emit('console',{console:user+" 斷線，請等候回復。" }) ;
+					io.sockets.in(number).emit('console',{console:user+" 斷線，請等候回復。" , notify : true }) ;
+					if ( room[number].disconnectCount === room[number].user.length ){
+						delete room[number] ;
+						getRoomList();
+					}
 				}
 			} 
 		});
@@ -139,34 +147,40 @@
 				var number = data.number ;
 				var index = room[number].role.indexOf(oldRole) ;
 				room[number].role[index] = newRole ;
-				io.sockets.in(number).emit('console',{console:"室長將 " + oldRole + " 替換成 " + newRole }) ;
+				io.sockets.in(number).emit('console',{console:"室長將 " + oldRole + " 替換成 " + newRole , notify : true }) ;
 
 				showRole(number,oldRole);
 			}
 		});
-		socket.on("resetRole",function (data){
-			var number = data.number ;
+		var resetRole = function(number){
 			clients[room[number].createId].emit("resetRole",{role:room[number].role});
-			if ( room[number].user.length >= 5 ){
-				room[number].role = bgamount[room[number].user.length];
+			if ( room[number].user.length > 5 ){
+				room[number].role = bgamount[room[number].user.length].slice();
 				showRole(number);
+			} else {
+				room[number].role = bgamount[5].slice();
+				showRole(number);							
 			}
+		}
+		socket.on("resetRole",function (data){
+			resetRole(data.number);
 		});
 		socket.on("godSet",function (data){
 			var number = data.number;
 			var godSet = data.godSet ;
 			if ( room[number].god === false && godSet === true ){
 				room[number].god = true ;
-				io.sockets.in(number).emit('console',{console:"室長開啟湖中女神。"}) ;
+				io.sockets.in(number).emit('console',{console:"室長開啟湖中女神。", notify : true}) ;
 			} else if ( room[number].god === true && godSet === false ){
 				room[number].god = false ;
-				io.sockets.in(number).emit('console',{console:"室長關閉湖中女神。"}) ;
+				io.sockets.in(number).emit('console',{console:"室長關閉湖中女神。", notify : true}) ;
 			}
 		})
 		socket.on("restart", function (data){
 
 			var number = data.number ;
 			room[number].role = [] ;
+			room[number].disconnectCount = 0 ;
 			room[number].c = [] ;
 			room[number].cap = 0 ;
 			room[number].round = 1 ;
@@ -208,7 +222,7 @@
 					var maxNum = room[number].user.length - 1 ;  
 					var minNum = 0;  
 					while ( maxNum >= 0 ){
-						var n = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
+						var n = Math.floor(Math.random() * (maxNum - minNum + 1) + minNum);
 						newId.push(id[n]);
 						newU.push(u[n]);
 						id.splice(n, 1);
@@ -225,7 +239,7 @@
 					var maxNum = room[number].user.length - 1 ;  
 					var minNum = 0;  
 					while ( maxNum >= 0 ){
-						var n = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
+						var n = Math.floor(Math.random() * (maxNum - minNum + 1) + minNum);
 						room[number].c.push(a[n]) ;
 						a.splice(n, 1);
 						maxNum -- ;
@@ -267,6 +281,7 @@
 					io.sockets.in(number).emit('console',{console:"隊長正在選擇隊員。"});
 					room[number].wait[room[number].cap] = "c" ;
 					clients[room[number].id[room[number].cap]].emit("caption",{amount:room[number].amount[room[number].round-1],users:room[number].user}) ;
+					getRoomList();
 				}
 			}
 		});
@@ -334,8 +349,10 @@
 				} else {
 					room[number].vote ++ ;
 					if ( room[number].vote > 5 ){
-						io.sockets.in(number).emit('console',{console:"投票超過五次！壞人獲勝！"}) ;
-						clients[room[number].createId].emit("gameover","gameover") ;
+						var msg = "投票超過五次！壞人獲勝！" ;
+						io.sockets.in(number).emit('console',{console:msg}) ;
+						io.sockets.in(number).emit('gameoverMessage',msg);
+						clients[room[number].createId].emit("gameover",msg) ;
 					} else {
 						if ( room[number].vote === 5 ) {
 							io.sockets.in(number).emit('console',{console:"注意！這是最後一次投票！"}) ;
@@ -409,11 +426,13 @@
 					clients[room[number].id[ass]].emit("ass",{good:good}) ;
 					room[number].wait[ass] = "a" ;
 				} else if ( room[number].failAmount >= 3 ){
-					io.sockets.in(number).emit('console',{console:"壞人獲勝。"}) ;
+					var msg = "三次任務失敗，壞人獲勝。" ;
+					io.sockets.in(number).emit('console',{console:msg}) ;
 					for ( var i = 0 ; i < room[number].c.length ; i ++ ){
 						io.sockets.in(number).emit('console',{console:room[number].user[i]+" 身份："+room[number].c[i]}) ;
 					}
-					clients[room[number].createId].emit("gameover","gameover") ;
+					io.sockets.in(number).emit('gameoverMessage',msg);
+					clients[room[number].createId].emit("gameover",msg) ;
 					io.sockets.in(number).emit('status', {round:room[number].round,vote:room[number].vote,amount:room[number].amount[room[number].round-1],cap:room[number].user[room[number].cap],success:room[number].successAmount,fail:room[number].failAmount,godNumber:room[number].godNumber,godArray:room[number].godArray,capIndex:room[number].cap });
 				} else {
 					room[number].round ++ ;
@@ -426,7 +445,7 @@
 					room[number].mission = [] ;
 					room[number].missionResult = 0 ;
 					room[number].missionAmount = 0 ;
-					if ( room[number].god === true && room[number].role.length >= 7 && room[number].round >= 2 && room[number].round <= 4 ){
+					if ( room[number].god === true && room[number].role.length >= 7 && room[number].round >= 3 && room[number].round <= 5 ){
 						room[number].wait[room[number].godNumber] = "g" ;
 						io.sockets.in(number).emit('console',{console:room[number].user[room[number].godNumber]+" 正在使用湖中女神。"});
 						var g = [] ;
@@ -476,13 +495,19 @@
 			var user = data.user ;
 			var index = data.index ;
 			var number = data.number ;
-			io.sockets.in(number).emit('console',{console:"刺客選擇刺殺 "+room[number].user[index]}) ;
+			var msg = "刺客選擇刺殺 "+room[number].user[index] ;
+			io.sockets.in(number).emit('console',{console:"刺客選擇刺殺 "+msg}) ;
 			if ( room[number].c[index] === "梅林" ){
-				io.sockets.in(number).emit('console',{console:"刺中梅林！壞人獲勝！"}) ;
+				var m1 = "刺中梅林！壞人獲勝！" ;
+				msg += "<br>" + m1 ;
+				io.sockets.in(number).emit('console',{console:m1}) ;
 			} else {
-				io.sockets.in(number).emit('console',{console:"刺殺失敗！好人獲勝！"}) ;
+				var m2 = "刺殺失敗！好人獲勝！" ;
+				msg += "<br>" + m2 ;
+				io.sockets.in(number).emit('console',{console:m2}) ;
 			}
-			clients[room[number].createId].emit("gameover","gameover") ;
+			io.sockets.in(number).emit('gameoverMessage',msg);
+			clients[room[number].createId].emit("gameover",msg) ;
 			for ( var i = 0 ; i < room[number].c.length ; i ++ ){
 				if (room[number].c[i] !== "壞人" || room[number].c[i] !== "刺客" )
 					io.sockets.in(number).emit('console',{console:room[number].user[i]+" 身份："+room[number].c[i]}) ;
@@ -504,6 +529,7 @@
 						break ;
 					}
 				}
+				room[number].disconnect -- ;
 				Users[socket.id] = {} ;
 				Users[socket.id].user = user ;
 				Users[socket.id].number = number ;
@@ -606,6 +632,7 @@
 		room[number] = {} ;
 		room[number].role = [] ;
 		room[number].create = creater ;
+		room[number].disconnectCount = 0 ;
 		room[number].user = [] ;
 		room[number].id = [] ;
 		room[number].c = [] ;

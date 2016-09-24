@@ -1,6 +1,6 @@
 (function(){
-	var socket = io.connect('http://my-avalon.herokuapp.com/');
-	//var socket = io.connect('localhost:8080');
+	//var socket = io.connect('http://my-avalon.herokuapp.com/');
+	var socket = io.connect('localhost:8080');
 	var gb = null 
 	var roomNumber = null ;
 	var role = null ;
@@ -167,6 +167,7 @@
 		socket.emit("join",{user:userName,number:roomNumber,password:document.getElementById("passwordJoin").value}) ;
 	});
 	socket.on("godResult",function (data){
+		notificationUser("女神結果出來了！");
 		document.getElementById("godArea").innerHTML = "" ;
 		var kind = data.kind ;
 		var index = data.index ;
@@ -181,6 +182,7 @@
 		document.getElementById("godResultArea").appendChild(result);
 	})
 	socket.on("changeCreater",function (data){
+		notificationUser("室長更換！");
 		create = true ;
 		creater = true ;
 	})
@@ -227,6 +229,7 @@
 			var user = data.user ;
 			var d = document.createElement("div") ;
 			d.innerHTML = user +" 加入房間" ;
+			notificationUser(user +" 加入房間");
 			document.getElementById("consoleArea").appendChild(d) ;
 
 			var ul = document.createElement("ul") ;
@@ -244,6 +247,7 @@
 	socket.on("leave", function (data){
 		var users = data.users ;
 		var user = data.user ;
+		notificationUser(user + "離開房間了！");
 		var d = document.createElement("div") ;
 		d.innerHTML = user +" 離開房間" ;
 		document.getElementById("consoleArea").appendChild(d) ;
@@ -263,6 +267,7 @@
 		socket.emit('create', { user : userName , password : document.getElementById("passwordCreate").value });
 		socket.on('create', function (data) {
 			if ( data.status === "success" ){
+				notificationUser("房間創建完成！");
 				create = true ;
 				creater = true ;
 				roomNumber = data.number ;
@@ -327,7 +332,12 @@
 		}
 		document.getElementById("userArea").appendChild(ul);
 	})
+	socket.on("gameoverMessage" ,function (data){
+		notificationUser( "遊戲結束！");
+		document.getElementById("noticeArea").innerHTML = data ;
+	});
 	socket.on("gameover" ,function (data){
+		document.getElementById("noticeArea").innerHTML = data ;
 		if ( creater === true ){
 			var restart = document.createElement("button") ;
 			restart.className = "w3-button w3-round" ;
@@ -434,6 +444,7 @@
 
 	socket.on('message', function (data) {
 		var text = document.createElement("div") ;
+		notificationUser(data.user + " : " + data.text);
 		text.innerHTML = data.user + " : " + data.text ;
 		document.getElementById("textArea").appendChild(text);
 		document.getElementById("textArea").scrollTop = document.getElementById("textArea").scrollHeight;
@@ -499,9 +510,11 @@
 		}
 	}
 	socket.on("start", function (data){
+		notificationUser("遊戲開始了！");
 		startGame(data);
 	})
 	socket.on("caption",function (data){
+		notificationUser("輪到你當隊長了！");
 		var users = data.users ;
 		var amount = data.amount ;
 		document.getElementById("chooseUserArea").innerHTML = "" ;
@@ -529,9 +542,14 @@
 	    document.getElementById("eventArea").appendChild(button);
 	});
 	socket.on("console",function (data){
+		var isNotify = data.notify ;
+		if ( data.notify === true ){
+			notificationUser(data.console);
+		}
 		addConsole(data.console);
 	});
 	socket.on("god",function (data){
+		notificationUser("輪到你使用女神！");
 		var users = data.users ;
 		document.getElementById("godArea").innerHTML = "" ;
 		var select = document.createElement("select")  ;
@@ -554,6 +572,7 @@
 		})
 	});
 	socket.on("mission",function (data){
+		notificationUser("輪到你出任務了！");
 		document.getElementById("missionArea").innerHTML = "" ;
 		var y = document.createElement("button") ;
 		y.innerHTML = "成功" ;
@@ -575,6 +594,7 @@
 		} 
 	});
 	socket.on("chooseUser",function (data){
+		notificationUser("輪到你投票！");
 		var users = data.users ;
 		missionArray = users;			
 		var missionDivs = document.querySelectorAll(".mission-div");
@@ -616,6 +636,7 @@
 		}
 	});
 	socket.on("voteResult",function (data){
+		notificationUser("投票結果出來了！");
 		var votes = data.votes ; 
 		var voteDivs = document.querySelectorAll(".vote-div");
 		for ( var i = 0 ; i < voteDivs.length ; i ++ ){
@@ -691,6 +712,9 @@
 		} else {
 			document.getElementById("noticeArea").innerHTML = "" ;
 		}
+		if ( parseInt(vote) === 5){
+			document.getElementById("noticeArea").innerHTML += "<br>注意！這是最後一輪投票！" ;
+		}
 
 		
 		document.getElementById("gameInfoArea").innerHTML = "";
@@ -750,6 +774,7 @@
 		
 	});
 	socket.on("ass",function (data){
+		notificationUser("選擇暗殺對象！");
 		var good = data.good ;
 		document.getElementById("assArea").innerHTML = "" ;
 		var select = document.createElement("select")  ;
@@ -780,5 +805,33 @@
 
 	hide(document.getElementById("roomPage"));
 	hide(document.getElementById("gamePage"));
+
+	//document.addEventListener('visibilitychange', visibleChangeHandler, false);
+	var notification = window.Notification || window.mozNotification || window.webkitNotification;
+	notification.requestPermission(function(permission){});
+
+	var originalTitle = '', messageCount = 0;
+	function notificationUser(message)
+	{
+	    if (document['hidden']) {
+	        Notify(message)
+	    }
+	}
+
+	function Notify(message)
+	{
+	    if ('undefined' === typeof notification)
+	        return false;       //Not supported....
+	    var noty = new notification(
+	        "Avalon", {
+	            body: message,
+	            dir: 'auto', // or ltr, rtl
+	            lang: 'EN', //lang used within the notification.
+	            tag: 'notificationPopup', //An element ID to get/set the content
+	            icon: '' //The URL of an image to be used as an icon
+	        }
+	    );
+	    return true;
+	}
 
 })();
