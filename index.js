@@ -3,8 +3,8 @@
 	var app = express();
 	var server = require('http').createServer(app);
 	var io = require('socket.io').listen(server);
-	server.listen(process.env.PORT || 8080);
-	//server.listen(8080);
+	//server.listen(process.env.PORT || 8080);
+	server.listen(8080);
 	app.use(express.static(__dirname ));
 	var amountList = [0,1,2,3,4,
 		[2,3,2,3,3],
@@ -30,9 +30,16 @@
 	var Users = {} ;
 	io.sockets.on('connection', function (socket) { 
 		clients[socket.id] = socket ; 
+		socket.on("getRoomList",function (data){
+			socket.join("roomList");
+			getRoomList(socket);
+		});
 	    socket.on('create', function (data) {
+	    	var password = data.password ;
+	    	socket.leave("roomList");
 	    	var u = data.user ;
 	    	var number = makeRoom(u) ;
+	    	room[number].password = password ;
 	    	room[number].createId = socket.id ;
 			Users[socket.id] = {} ;
 			Users[socket.id].user = u ;
@@ -41,17 +48,20 @@
 		   	socket.join(number);
 		   	room[number].id.push(socket.id) ;
 		   	io.sockets.in(number).emit("join",{status:"success",users:room[number].user,user:u,number:number});
+		   	getRoomList();
 	    });
 	    socket.on('message',function (data){
 			io.sockets.in(data.number).emit('message', {user:data.user,text:data.text});
 	    });
 
 		socket.on("join",function (data){
+	    	socket.leave("roomList");
 			var user = data.user ;
 			var number = data.number ;
+			var password = data.password ;
 			if ( room[number] === undefined || room[number].start === true ){
 				socket.emit("join",{status:"fail"});
-			} else {
+			} else if ( room[number].password === "" || room[number].password === password ){
 				Users[socket.id] = {} ;
 				Users[socket.id].user = user ;
 				Users[socket.id].number = number ;
@@ -61,6 +71,8 @@
 				socket.join(number);
 				io.sockets.in(number).emit("join",{status:"success",users:users,"user":user,number:number});
 				showRole(number);
+			} else {
+				socket.emit("join",{status:"fail"});
 			}
 		});
 		socket.on('disconnect', function() {
@@ -74,6 +86,17 @@
 					socket.leave(number);
 					io.sockets.in(number).emit("leave",{status:"success",users:room[number].user,"user":user,number:number});
 					showRole(number);
+					if ( room[number].create === Users[socket.id].user ){
+						if ( room[number].user.length !== 0 ){
+							room[number].create = room[number].user[0] ;
+							io.sockets.in(number).emit('console',{console: "室長替換成 "+ room[number].user[0] }) ;
+							clients[room[number].id[0]].emit('changeCreater',{});
+							io.sockets.in(number).emit("restart",{status:"success",users:room[number].user,number:number});
+						}  else {
+							delete room[number] ;
+							getRoomList();
+						}
+					} 
 				} else {
 					var index = room[number].id.indexOf(socket.id) ;
 					var user = room[number].user[index] ;
@@ -558,8 +581,23 @@
 		io.sockets.in(number).emit('role', {role:room[number].role,oldRole:oldRole});
 	}
 
+	var getRoomList = function(socket){
+		var roomList = [] ;
+		for ( var key in room ){
+			var p = true ;
+			if ( room[key].password === "")
+				p = false ;
+			roomList.push({number:key,start:room[key].start,password:p}) ;
+		}
+		if ( socket !== undefined)
+			socket.emit("getRoomList",{roomList:roomList});
+		else {
+		   	io.sockets.in("roomList").emit("getRoomList",{roomList:roomList});
+		}
+	}
+
 	var makeRoom = function(creater){
-		var maxNum = 4000;  
+		var maxNum = 2000;  
 		var minNum = 6000;  
 		var number = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
 		while ( room.number !== undefined ){

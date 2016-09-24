@@ -1,6 +1,6 @@
 (function(){
-	var socket = io.connect('http://my-avalon.herokuapp.com/');
-	//var socket = io.connect('localhost:8080');
+	//var socket = io.connect('http://my-avalon.herokuapp.com/');
+	var socket = io.connect('localhost:8080');
 	var gb = null 
 	var roomNumber = null ;
 	var role = null ;
@@ -80,6 +80,7 @@
 			} else {
 				hide(document.getElementById("loginPage"));
 				show(document.getElementById("roomPage"));
+				getRoomList();
 				userName = '<img height="20px" src="'+document.getElementById("imageInput").value+'"></img>' ;
 			}
 		}
@@ -94,11 +95,50 @@
 			} else {
 				hide(document.getElementById("loginPage"));
 				show(document.getElementById("roomPage"));
+				getRoomList();
 				userName = document.getElementById("nameInput").value ;
 			}
 		}
 	});
+	document.getElementById("roomPlayingDisplayBox").onclick = function(){
+		getRoomList();
+	}
+	var getRoomList = function(){
+		socket.emit("getRoomList",{});
+	}
+	socket.on("getRoomList",function (data){
+		document.getElementById("roomDisplayDiv").innerHTML = "" ;
+		var roomList = data.roomList ;
+		for ( var i = 0 ; i < roomList.length ; i ++ ){
+			if ( document.getElementById("roomPlayingDisplayBox").checked === true ){
+				if ( roomList[i].start )
+					continue ;
+			}
+			var div = document.createElement("div") ;
+			div.style.padding = "5px" ;
+			var number = document.createElement("span") ;
+			number.innerHTML = roomList[i].number ;
+			div.appendChild(number);
+			if ( !roomList[i].start ){
+				var button = document.createElement("button") ;
+				button.innerHTML = "進入" ;
+				button.style.float = "right" ;
+				div.appendChild(button);
+				var password = document.createElement("input") ;
+				if ( roomList[i].password === true  ){
+					password.style.float = "right" ;
+					password.placehoder = "請輸入密碼" ;
+					div.appendChild(password);
+				}
+				button.setAttribute("data-number",roomList[i].number);
+				button.onclick = function(){
+					socket.emit("join",{user:userName,number:parseInt(this.getAttribute("data-number")),password:password.value}) ;
+				}
 
+			}
+			document.getElementById("roomDisplayDiv").appendChild(div);
+		}
+	})
 	function stripHTML(input) {
 		if ( input !== input.replace(/(<([^>]+)>)/ig,"") )
 			return true ; 
@@ -124,7 +164,7 @@
 
 	document.getElementById("joinButton").addEventListener("click",function(){
 		roomNumber = document.getElementById("roomInput").value ;
-		socket.emit("join",{user:userName,number:roomNumber}) ;
+		socket.emit("join",{user:userName,number:roomNumber,password:document.getElementById("passwordJoin").value}) ;
 	});
 	socket.on("godResult",function (data){
 		document.getElementById("godArea").innerHTML = "" ;
@@ -139,6 +179,10 @@
 		result.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[index].innerHTML ;
 		document.getElementById("godResultArea").innerHTML = ""   ;
 		document.getElementById("godResultArea").appendChild(result);
+	})
+	socket.on("changeCreater",function (data){
+		create = true ;
+		creater = true ;
 	})
 	socket.on("resetRole",function (data){
 		badRoleList = badRoleList2.slice(0) ;
@@ -216,7 +260,7 @@
 	});
 
 	var createRoom = function(){
-		socket.emit('create', { user : userName });
+		socket.emit('create', { user : userName , password : document.getElementById("passwordCreate").value });
 		socket.on('create', function (data) {
 			if ( data.status === "success" ){
 				create = true ;
