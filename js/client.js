@@ -16,6 +16,7 @@
 	var gArray = [] ;
 	var bArray = [] ;
 	var mArray = [] ;
+	var isJoining = false ; 
 	var missionArray = [] ;
 	var hide = self.hide = function(el){
 		if ( !el )
@@ -163,8 +164,11 @@
 	};
 
 	document.getElementById("joinButton").addEventListener("click",function(){
-		roomNumber = document.getElementById("roomInput").value ;
-		socket.emit("join",{user:userName,number:roomNumber,password:document.getElementById("passwordJoin").value}) ;
+		if ( isJoining === false ){
+			isJoining = true ;
+			roomNumber = document.getElementById("roomInput").value ;
+			socket.emit("join",{user:userName,number:roomNumber,password:document.getElementById("passwordJoin").value}) ;
+		}
 	});
 	socket.on("godResult",function (data){
 		notificationUser("女神結果出來了！");
@@ -192,6 +196,7 @@
 		setRoleList(data);
 	})
 	socket.on("join",function (data){
+		isJoining = false ;
 		if ( data.status === "fail" ){
 			alert("加入失敗！");
 		} else {
