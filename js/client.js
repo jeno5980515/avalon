@@ -196,7 +196,6 @@
 		setRoleList(data);
 	})
 	socket.on("join",function (data){
-		isJoining = false ;
 		if ( data.status === "fail" ){
 			alert("加入失敗！");
 		} else {
@@ -251,6 +250,7 @@
 			document.getElementById("userArea").appendChild(ul);
 
 		}
+		isJoining = false ;
 	});
 
 	socket.on("leave", function (data){
