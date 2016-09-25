@@ -1,6 +1,6 @@
 (function(){
-	var socket = io.connect('http://my-avalon.herokuapp.com/');
-	//var socket = io.connect('localhost:8080');
+	//var socket = io.connect('http://my-avalon.herokuapp.com/');
+	var socket = io.connect('localhost:8080');
 	var gb = null 
 	var roomNumber = null ;
 	var role = null ;
@@ -12,10 +12,18 @@
 	var goodRoleList = ["派西維爾","好人"] ;
 	var badRoleList = ["莫甘娜","莫德雷德","奧伯倫","壞人"] ;
 	var badRoleList2 = ["莫甘娜","莫德雷德","奧伯倫","壞人"] ;
+	var imageList = ["board_5.jpg","board_6.jpg","board_7.jpg","board_8.jpg","board_9.jpg","board_10.jpg","mission_token.png","vote_token.png","fail_token.png","success_token.png"] ;
+	var canvasMap = {} ;
+	var loadImageProgress = 0 ;
+	var imgMap = {} ;
+	var userAmount = 5 ;
 	var roles = [] ;
+	var missionArray = [];
 	var gArray = [] ;
 	var bArray = [] ;
 	var mArray = [] ;
+	var nowRound = 1 ;
+	var nowVote = 1 ;
 	var isJoining = false ; 
 	var missionArray = [] ;
 	var hide = self.hide = function(el){
@@ -203,6 +211,7 @@
 			alert("加入失敗！");
 		} else {
 			var users = data.users ;
+			userAmount = users.length ;
 			var number = data.number ;
 			roomNumber = number ;
 			socket.emit("resetRole",{number:number}) ;
@@ -252,6 +261,7 @@
 			}
 			document.getElementById("userArea").appendChild(ul);
 
+			drawBoard();
 		}
 		isJoining = false ;
 	});
@@ -259,6 +269,7 @@
 	socket.on("leave", function (data){
 		var users = data.users ;
 		var user = data.user ;
+		userAmount = users.length ;
 		notificationUser(user + "離開房間了！");
 		var d = document.createElement("div") ;
 		d.innerHTML = user +" 離開房間" ;
@@ -273,6 +284,7 @@
 			ul.appendChild(u) ;
 		}
 		document.getElementById("userArea").appendChild(ul);
+		drawBoard();
 	});
 
 	var createRoom = function(){
@@ -292,7 +304,7 @@
 				socket.emit("role",{ role : "好人" , number : roomNumber });
 				socket.emit("role",{ role : "刺客" , number : roomNumber });
 				socket.emit("role",{ role : "壞人" , number : roomNumber });
-
+				drawBoard();
 			} 
 		}); 
 	}
@@ -353,7 +365,13 @@
 			document.getElementById("bArea").innerHTML = "" ;
 			document.getElementById("gameInfoArea").innerHTML = "" ;
 			document.getElementById("restartArea").innerHTML = "" ;
-			document.getElementById("eventArea").innerHTML = "" ;
+			document.getElementById("eventArea").innerHTML = '<div id="chooseUserArea" class="w3-container"></div>' +
+			'<div id="chooseVoteArea" class="w3-container"></div>' +
+			'<div id="missionArea" class="w3-container"></div>' +
+			'<div id="godArea" class="w3-container"></div>' + 
+			'<div id="noticeArea" class="w3-container"></div>' +
+			'<div id="assArea" class="w3-container"></div>' + 
+			'<div id="restartArea" class="w3-container"></div>' ;
 			socket.emit("restart",{number:roomNumber}) ;
 		} else {	
 			document.getElementById("restartArea").innerHTML = "贊成未過半，重啟失敗！" ;
@@ -685,7 +703,9 @@
 		document.getElementById("userArea").appendChild(ul);
 	});
 	socket.on("status",function (data){
+		missionArray = data.missionArray ;
 		var round = data.round ;
+		nowRound = round ;
 		var amount = data.amount ;
 		var cap = data.cap ;
 		var vote = data.vote ;
@@ -726,6 +746,7 @@
 		f.innerHTML = fail ;
 		var v = document.createElement("span") ;
 		v.className = "w3-badge w3-yellow" ;
+		nowVote = vote ;
 		v.innerHTML = vote ;
 		document.getElementById("sfvArea").appendChild(s);
 		document.getElementById("sfvArea").appendChild(f);
@@ -794,6 +815,7 @@
 			}
 		}
 		
+		drawBoard();
 		
 	});
 	socket.on("ass",function (data){
@@ -882,6 +904,64 @@
 	        }
 	    );
 	    return true;
+	}
+
+	SlEEPBAG.canvasAutoResizer.load(function(self){
+		self.canvasWidth = 480;
+		self.canvasHeight = 310;
+	    var canvas = document.createElement("canvas");
+	    var gameArea = self.getGameArea();
+	    document.body.appendChild(gameArea);
+	    self.appendGameElement(canvas);
+	});
+
+	var resizer = SlEEPBAG.canvasAutoResizer;
+	var boardCanvas = resizer.getGameElement();
+	var boardCtx = boardCanvas.getContext("2d");
+	document.getElementById("boardDiv").appendChild(boardCanvas);
+	var resoultion = resizer.getResolution();
+	resizer.setCenter();
+	var makeCache  = function(index,img){
+		img.onload = function(){
+			var canvas = document.createElement('canvas');
+			var ctx = canvas.getContext('2d');
+			canvas.width = img.width ;
+			canvas.height = img.height ;
+			ctx.drawImage(img,0,0,img.width,img.height) ;
+			canvasMap[imageList[index]] = canvas ;
+			loadImageProgress ++ ;
+			if ( loadImageProgress === imageList.length ){
+				drawBoard();
+			}
+		}
+	}
+
+	for ( var i = 0 ; i < imageList.length ; i ++ ){
+		var img = new Image();
+		img.src = "image/" + imageList[i] ;
+		imgMap[imageList[i]] = img ;
+		makeCache(i,img) ;
+	}
+
+	window.addEventListener("resize",function(){
+		drawBoard();
+	})
+
+	var drawBoard = function(){
+		var b = 5 ;
+		if ( userAmount >= 5 ){
+			b = userAmount ;
+		}
+		boardCtx.drawImage(canvasMap["board_"+b+".jpg"],0,0);
+		boardCtx.drawImage(canvasMap["vote_token.png"],(77*(nowVote-1))+8,238);
+		for ( var i = 0 ; i < missionArray.length ; i ++ ){
+			if (missionArray[i] === false )
+				boardCtx.drawImage(canvasMap["fail_token.png"],(93*(i))+8,98);
+			else {
+				boardCtx.drawImage(canvasMap["success_token.png"],(93*(i))+8,98);
+			}
+		}
+		boardCtx.drawImage(canvasMap["mission_token.png"],(92*(nowRound-1))+63,155);
 	}
 
 })();

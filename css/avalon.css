@@ -1,0 +1,56 @@
+.roleList li ul{
+	display: none;
+}
+
+.roleList li:hover ul{
+	display: inherit;
+}
+
+#textArea{
+	overflow:auto;
+	height:30vh;
+}
+#textInputArea{
+	
+}
+#userArea{
+	padding: 0px;
+}	
+#roleArea{
+	padding: 0px;
+}
+#consoleArea{
+	overflow:auto; 
+	height:30vh;
+}
+.page{
+	padding: 0px;
+	margin: 0px;
+}
+#userInfoArea{
+	width:100vw;
+}
+#wordArea{
+	width: 100vw;
+}
+#eventArea{
+	width: 100vw;
+	display:block;
+	overflow:auto;
+	min-height: 20vh;
+}
+.enterRoomDiv{
+	border: 1px solid black ;
+	border-radius: 5px ;
+	padding:10px;
+}
+.boardImg{
+	margin-left: 10vw;
+	width : 80vw;
+	max-width: 480px;
+	display:block;
+}
+
+canvas{
+	max-width: 480px;
+}
