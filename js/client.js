@@ -348,6 +348,17 @@
 		notificationUser( "遊戲結束！");
 		document.getElementById("noticeArea").innerHTML = data ;
 	});
+	socket.on("restartResult" ,function (data){
+		if ( data.status === "success" ){
+			document.getElementById("bArea").innerHTML = "" ;
+			document.getElementById("gameInfoArea").innerHTML = "" ;
+			document.getElementById("restartArea").innerHTML = "" ;
+			document.getElementById("eventArea").innerHTML = "" ;
+			socket.emit("restart",{number:roomNumber}) ;
+		} else {	
+			document.getElementById("restartArea").innerHTML = "贊成未過半，重啟失敗！" ;
+		}
+	});
 	socket.on("gameover" ,function (data){
 		document.getElementById("noticeArea").innerHTML = data ;
 		if ( creater === true ){
@@ -814,6 +825,33 @@
 		document.getElementById("consoleArea").appendChild(div) ;
 		document.getElementById("consoleArea").scrollTop = document.getElementById("consoleArea").scrollHeight;
 	}
+	document.getElementById("restartButton").addEventListener("click",function(){
+		socket.emit("restartRequest",{number:roomNumber , user:userName});
+	})
+	socket.on("restartRequest",function (data){
+		var status = data.status ;
+		var user = data.user ; 
+		if ( status === "success" ){
+			document.getElementById("restartArea").innerHTML = user + "發起重新遊戲的投票，是否要回到房間？" ;
+			var yesButton = document.createElement("button") ;
+			yesButton.innerHTML = "贊成" ;
+			yesButton.addEventListener("click",function(){
+				socket.emit("restartVote",{number:roomNumber , user:userName , result : true });
+				document.getElementById("restartArea").innerHTML = "" ;
+			})
+			document.getElementById("restartArea").appendChild(yesButton) ;
+			var noButton = document.createElement("button") ;
+			noButton.innerHTML = "反對" ;
+			noButton.addEventListener("click",function(){
+				socket.emit("restartVote",{number:roomNumber , user:userName , result : false });
+				document.getElementById("restartArea").innerHTML = "" ;
+			})
+			document.getElementById("restartArea").appendChild(noButton) ;
+		} else {
+			alert("要求重啟失敗！") ;
+		}
+	})
+
 
 	hide(document.getElementById("roomPage"));
 	hide(document.getElementById("gamePage"));
