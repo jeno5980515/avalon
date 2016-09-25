@@ -133,7 +133,10 @@
 				}
 				button.setAttribute("data-number",roomList[i].number);
 				button.onclick = function(){
-					socket.emit("join",{user:userName,number:parseInt(this.getAttribute("data-number")),password:password.value}) ;
+					isJoining = true ;
+					if ( isJoining === false ){
+						socket.emit("join",{user:userName,number:parseInt(this.getAttribute("data-number")),password:password.value}) ;
+					}
 				}
 
 			}
@@ -168,9 +171,6 @@
 		if ( isJoining === false ){
 			roomNumber = document.getElementById("roomInput").value ;
 			socket.emit("join",{user:userName,number:roomNumber,password:document.getElementById("passwordJoin").value}) ;
-		}
-		this.onclick = function(){
-			
 		}
 	});
 	socket.on("godResult",function (data){
