@@ -55,13 +55,13 @@
 	    });
 
 		socket.on("join",function (data){
-	    	socket.leave("roomList");
 			var user = data.user ;
 			var number = data.number ;
 			var password = data.password ;
 			if ( room[number] === undefined || room[number].start === true ){
 				socket.emit("join",{status:"fail"});
 			} else if ( room[number].password === "" || room[number].password === password ){
+	    		socket.leave("roomList");
 				Users[socket.id] = {} ;
 				Users[socket.id].user = user ;
 				Users[socket.id].number = number ;
@@ -74,6 +74,7 @@
 			} else {
 				socket.emit("join",{status:"fail"});
 			}
+			getRoomList();
 		});
 		socket.on('disconnect', function() {
 			if ( Users[socket.id] !== undefined ){

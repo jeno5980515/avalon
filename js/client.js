@@ -164,10 +164,13 @@
 	};
 
 	document.getElementById("joinButton").addEventListener("click",function(){
+		isJoining = true ;
 		if ( isJoining === false ){
-			isJoining = true ;
 			roomNumber = document.getElementById("roomInput").value ;
 			socket.emit("join",{user:userName,number:roomNumber,password:document.getElementById("passwordJoin").value}) ;
+		}
+		this.onclick = function(){
+			
 		}
 	});
 	socket.on("godResult",function (data){
