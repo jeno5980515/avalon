@@ -1,11 +1,11 @@
 (function(){
-	
+
 	var express = require('express');
 	var app = express();
 	var server = require('http').createServer(app);
 	var io = require('socket.io').listen(server);
-	server.listen(process.env.PORT || 8080);
-	//server.listen(8080);
+	//server.listen(process.env.PORT || 8080);
+	server.listen(8080);
 	app.use(express.static(__dirname ));
 	var amountList = [0,1,2,3,4,
 		[2,3,2,3,3],
@@ -82,7 +82,7 @@
 				var number = Users[socket.id].number  ;
 				if ( room[number] !== undefined )
 					room[number].disconnectCount ++ ;
-				if ( room[number].start === false ){
+				if ( room[number] !== undefined && room[number].start === false ){
 					var index = room[number].id.indexOf(socket.id) ;
 					var user = room[number].user[index] ;
 					room[number].user.splice(index,1) ;
@@ -104,12 +104,14 @@
 						}
 					} 
 				} else {
-					var index = room[number].id.indexOf(socket.id) ;
-					var user = room[number].user[index] ;
-					io.sockets.in(number).emit('console',{console:user+" 斷線，請等候回復。" , notify : true }) ;
-					if ( room[number].disconnectCount === room[number].user.length ){
-						delete room[number] ;
-						getRoomList();
+					if ( room[number] !== undefined ){
+						var index = room[number].id.indexOf(socket.id) ;
+						var user = room[number].user[index] ;
+						io.sockets.in(number).emit('console',{console:user+" 斷線，請等候回復。" , notify : true }) ;
+						if ( room[number].disconnectCount === room[number].user.length ){
+							delete room[number] ;
+							getRoomList();
+						}
 					}
 				}
 			} 
