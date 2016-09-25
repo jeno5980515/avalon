@@ -133,8 +133,8 @@
 				}
 				button.setAttribute("data-number",roomList[i].number);
 				button.onclick = function(){
-					isJoining = true ;
 					if ( isJoining === false ){
+						isJoining = true ;
 						socket.emit("join",{user:userName,number:parseInt(this.getAttribute("data-number")),password:password.value}) ;
 					}
 				}
@@ -167,8 +167,8 @@
 	};
 
 	document.getElementById("joinButton").addEventListener("click",function(){
-		isJoining = true ;
 		if ( isJoining === false ){
+			isJoining = true ;
 			roomNumber = document.getElementById("roomInput").value ;
 			socket.emit("join",{user:userName,number:roomNumber,password:document.getElementById("passwordJoin").value}) ;
 		}
