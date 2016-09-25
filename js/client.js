@@ -214,12 +214,16 @@
 				god.className = "w3-btn w3-round w3-indigo" ;
 				god.id = "godButton" ;
 				god.addEventListener("click",function(){
-					if ( godSet === true ){
-						godSet = false ;
+					if ( users.length < 7 ){
+						alert("需要七人以上才能使用湖中女神。") ;
 					} else {
-						godSet = true ;
+						if ( godSet === true ){
+							godSet = false ;
+						} else {
+							godSet = true ;
+						}
+						socket.emit("godSet",{godSet:godSet,number:roomNumber});
 					}
-					socket.emit("godSet",{godSet:godSet,number:roomNumber});
 				})
 				document.getElementById("numberDiv").appendChild(god);
 			}
