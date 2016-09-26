@@ -95,6 +95,11 @@
 					io.sockets.in(number).emit("leave",{status:"success",users:room[number].user,"user":user,number:number});
 					resetRole(number);
 					showRole(number);
+					if ( room[number].user.length >= 10 ){
+						room[number].isFull = true ;
+					} else {
+						room[number].isFull = false ;
+					}
 					if ( room[number].create === Users[socket.id].user ){
 						if ( room[number].user.length !== 0 ){
 							room[number].create = room[number].user[0] ;
@@ -108,11 +113,6 @@
 							getRoomList();
 						}
 					} 				
-					if ( room[number].user.length >= 10 ){
-						room[number].isFull = true ;
-					} else {
-						room[number].isFull = false ;
-					}
 				} else {
 					if ( room[number] !== undefined ){
 						room[number].disUser.push(socket.id);
