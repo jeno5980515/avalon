@@ -58,7 +58,7 @@
 			var user = data.user ;
 			var number = data.number ;
 			var password = data.password ;
-			if ( room[number] === undefined || room[number].start === true ){
+			if ( room[number] === undefined || room[number].start === true || room[number].isFull === true ){
 				socket.emit("join",{status:"fail"});
 			} else if ( room[number].password === "" || room[number].password === password ){
 	    		socket.leave("roomList");
@@ -71,13 +71,17 @@
 				socket.join(number);
 				io.sockets.in(number).emit("join",{status:"success",users:users,"user":user,number:number});
 				showRole(number);
+				if ( room[number].user.length >= 10 ){
+					room[number].isFull = true ;
+				} else {
+					room[number].isFull = false ;
+				}
 			} else {
 				socket.emit("join",{status:"fail"});
 			}
 			getRoomList();
 		});
 		socket.on('disconnect', function() {
-			console.log(socket.id);
 			if ( Users[socket.id] !== undefined ){
 				var number = Users[socket.id].number  ;
 				if ( room[number] !== undefined )
@@ -103,7 +107,12 @@
 							delete room[number] ;
 							getRoomList();
 						}
-					} 
+					} 				
+					if ( room[number].user.length >= 10 ){
+						room[number].isFull = true ;
+					} else {
+						room[number].isFull = false ;
+					}
 				} else {
 					if ( room[number] !== undefined ){
 						room[number].disUser.push(socket.id);
@@ -258,6 +267,7 @@
 			room[number].voteArray = [] ;
 			room[number].amount = [] ;
 			room[number].mission = [] ;
+			room[number].isFull = false ;
 			room[number].missionResult = 0 ;
 			room[number].missionAmount = 0 ;
 			room[number].successAmount = 0 ;
@@ -738,6 +748,7 @@
 		room[number].cap = 0 ;
 		room[number].round = 1 ;
 		room[number].vote = 1 ;
+		room[number].isFull = false ;
 		room[number].isRestart = false ;
 		room[number].voteArray = [] ;
 		room[number].amount = [] ;
