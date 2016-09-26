@@ -429,7 +429,8 @@
 
 				roleDiv.classList.add("w3-dropdown-hover");
 				var roleContentDiv = document.createElement("div") ;
-				roleContentDiv.style.width = "240px" ;
+				roleContentDiv.style.maxWidth = "240px" ;
+				roleContentDiv.style.width = "45vw" ;
 				roleContentDiv.style.backgroundColor = "transparent" ;
 				roleContentDiv.classList.add("w3-dropdown-content");
 				if ( getRoleKind(data.role[i]) === "good" && data.role[i] !== "梅林" ){
