@@ -54,3 +54,14 @@
 canvas{
 	max-width: 480px;
 }
+
+.roleImg {
+	max-width: 100px;
+	width :20vw;
+}
+
+.roleContentImg{
+	max-width: 80px;
+	width :15vw;
+	display: inline-block !important;
+}

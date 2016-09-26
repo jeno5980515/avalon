@@ -12,7 +12,7 @@
 	var goodRoleList = ["派西維爾","好人"] ;
 	var badRoleList = ["莫甘娜","莫德雷德","奧伯倫","壞人"] ;
 	var badRoleList2 = ["莫甘娜","莫德雷德","奧伯倫","壞人"] ;
-	var imageList = ["board_5.jpg","board_6.jpg","board_7.jpg","board_8.jpg","board_9.jpg","board_10.jpg","mission_token.png","vote_token.png","fail_token.png","success_token.png"] ;
+	var imageList = ["board_5.jpg","board_6.jpg","board_7.jpg","board_8.jpg","board_9.jpg","board_10.jpg","mission_token.png","vote_token.png","fail_token.png","success_token.png","梅林.jpg","好人.jpg","壞人.jpg","刺客.jpg","派西維爾.jpg","莫甘娜.jpg","莫德雷德.jpg","奧伯倫.jpg"] ;
 	var canvasMap = {} ;
 	var loadImageProgress = 0 ;
 	var imgMap = {} ;
@@ -22,6 +22,7 @@
 	var gArray = [] ;
 	var bArray = [] ;
 	var mArray = [] ;
+	var roleList = [] ;
 	var nowRound = 1 ;
 	var nowVote = 1 ;
 	var isJoining = false ; 
@@ -380,6 +381,10 @@
 	socket.on("gameover" ,function (data){
 		document.getElementById("noticeArea").innerHTML = data ;
 		if ( creater === true ){
+			socket.emit("restart",{number:roomNumber}) ;
+		}
+		/*
+		if ( creater === true ){
 			var restart = document.createElement("button") ;
 			restart.className = "w3-button w3-round" ;
 			restart.innerHTML = "重新開始" ;
@@ -388,9 +393,11 @@
 			})
 			document.getElementById("restartArea").appendChild(restart) ;
 		}
+		*/
 	});
 	var setRoleList = function(data){
-		document.getElementById("roleArea").innerHTML = "" ;
+		//document.getElementById("roleArea").innerHTML = "" ;
+		document.getElementById("roleDiv").innerHTML = "" ;
 		var ul = document.createElement("ul") ;
 		ul.className = "w3-ul w3-card-4 roleList" ;
 		if ( create === true ){
@@ -412,6 +419,56 @@
 			} else {
 				div.className = "w3-red" ;
 			}
+			var roleDiv = document.createElement("div") ;
+			roleDiv.style.display = "inline-block" ;
+			roleDiv.setAttribute("data-role",data.role[i]);
+			var img = imgMap[data.role[i]+".jpg"].cloneNode(true) ;
+			img.className = "roleImg" ;
+			roleDiv.appendChild(img);
+			if ( create === true ){
+
+				roleDiv.classList.add("w3-dropdown-hover");
+				var roleContentDiv = document.createElement("div") ;
+				roleContentDiv.style.width = "50vw" ;
+				roleContentDiv.style.backgroundColor = "transparent" ;
+				roleContentDiv.classList.add("w3-dropdown-content");
+				if ( getRoleKind(data.role[i]) === "good" && data.role[i] !== "梅林" ){
+					for ( var j = 0 ; j < goodRoleList.length ; j ++ ){
+						if ( goodRoleList[j] !==  data.role[i]) {
+							var role = setRole("good",j,roleDiv) ;
+							roleContentDiv.appendChild(role) ;
+						}
+					}
+				} else if ( getRoleKind(data.role[i]) === "bad" && data.role[i] !== "刺客" ){
+					for ( var j = 0 ; j < badRoleList.length ; j ++ ){
+						if ( badRoleList[j] !== data.role[i] ){
+							var role = setRole("bad",j,roleDiv) ;
+							if ( data.role.length === 5 ){ 
+								roleContentDiv.style.right = "0" ;
+							} else if ( data.role.length === 6 ){
+								;
+							} else if ( data.role.length === 7 ){
+								;
+							} else if ( data.role.length === 8 ){
+								;
+							} else if ( data.role.length === 9 ){
+								if ( i === 8 ){
+									roleContentDiv.style.right = "0" ;
+								}
+							} else if ( data.role.length === 10 ){
+								if ( i === 8 || i === 9 ){
+									roleContentDiv.style.right = "0" ;
+								} 
+							}
+							roleContentDiv.appendChild(role) ;
+						}
+					}
+				}
+				roleDiv.appendChild(roleContentDiv);
+			}
+			document.getElementById("roleDiv").appendChild(roleDiv);
+
+			/*
 			var h = document.createElement("h5") ;
 			h.innerHTML = data.role[i] ;
 			div.appendChild(h);
@@ -439,38 +496,48 @@
 			}
 			
 			ul.appendChild(div);
+			*/
 		}
-		document.getElementById("roleArea").appendChild(ul);
+		//ocument.getElementById("roleArea").appendChild(ul);
+		drawBoard();
 	}
 	socket.on("role",function (data){
 		setRoleList(data);
 	})
 
-	var setRole = function(kind,index,li){
-		var role = document.createElement("li") ;
+	var setRole = function(kind,index,roleDiv){
+		var role ;
 		if ( kind === "good" ){
-			role.style.backgroundColor = "#330066" ;
-			role.innerHTML = goodRoleList[index] ;
+			role = imgMap[goodRoleList[index]+".jpg"].cloneNode(true) ;
+		} else {
+			role = imgMap[badRoleList[index]+".jpg"].cloneNode(true) ;
+		}
+		role.classList.add("roleContentImg") ;
+		//ar role = document.createElement("li") ;
+		if ( kind === "good" ){
+			//role.style.backgroundColor = "#330066" ;
+			//role.innerHTML = goodRoleList[index] ;
 			role.addEventListener("click",function(){
 				socket.emit("role",{
-					oldRole : li.innerHTML ,
+					oldRole : roleDiv.getAttribute("data-role") ,
 					newRole : goodRoleList[index] ,
 					number : roomNumber 
 				})
 				goodRoleList.splice(index,1);
 			})
 		} else if ( kind === "bad" ){
-			role.style.backgroundColor = "#990000" ;
-			role.innerHTML = badRoleList[index] ;
+			//role.style.backgroundColor = "#990000" ;
+			//role.innerHTML = badRoleList[index] ;
 			role.addEventListener("click",function(){
 				socket.emit("role",{
-					oldRole : li.innerHTML ,
+					oldRole : roleDiv.getAttribute("data-role") ,
 					newRole : badRoleList[index] ,
 					number : roomNumber 
 				})
 				badRoleList.splice(index,1);
 			})
 		}
+		
 
 		return role ;
 	}
