@@ -238,6 +238,7 @@
 				show(document.getElementById("roomPage"));
 				hide(document.getElementById("gamePage"));
 				document.getElementById("consoleArea").innerHTML = "" ;
+				document.getElementById("textArea").innerHTML = "" ;
 				localStorage.socketId = "" ;
 			})
 			document.getElementById("numberDiv").appendChild(leaveButton);
@@ -360,6 +361,7 @@
 			show(document.getElementById("roomPage"));
 			hide(document.getElementById("gamePage"));
 			document.getElementById("consoleArea").innerHTML = "" ;
+			document.getElementById("textArea").innerHTML = "" ;
 			localStorage.socketId = "" ;
 		})
 		document.getElementById("numberDiv").appendChild(leaveButton);
