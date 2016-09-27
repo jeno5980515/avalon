@@ -65,3 +65,42 @@ canvas{
 	width :15vw;
 	display: inline-block !important;
 }
+
+.player{
+	width: 45vw; 
+	max-width: 200px;
+	margin-left: 10px;
+	margin-top: 10px;
+	display: inline-block;
+}
+
+.roleDiv {
+	margin-left: 3px;
+	margin-top: 3px;
+	margin-bottom: 3px;
+	width :35%;
+	display: inline-block;
+}
+
+.tokenDiv {
+	margin-left: 3px;
+	margin-top: 3px;
+	margin-bottom: 3px;
+	width :60%;
+	display: inline-block;
+}
+
+.roleImg2 {
+	width :100%;
+}
+
+.roleGuessDiv , .godDiv , .missionDiv , .captionDiv , .vote_token2Div , .campDiv{
+	margin-left: 3px ;
+	margin-top: 3px ;
+	width: 28%;
+	display: inline-block;
+}
+
+.roleGuessImg , .godImg , .mission , .captionImg, .vote_token2Img , .campImg{
+	width: 100%;
+}

@@ -12,7 +12,7 @@
 	var goodRoleList = ["派西維爾","好人"] ;
 	var badRoleList = ["莫甘娜","莫德雷德","奧伯倫","壞人"] ;
 	var badRoleList2 = ["莫甘娜","莫德雷德","奧伯倫","壞人"] ;
-	var imageList = ["board_5.jpg","board_6.jpg","board_7.jpg","board_8.jpg","board_9.jpg","board_10.jpg","mission_token.png","vote_token.png","fail_token.png","success_token.png","梅林.jpg","好人.jpg","壞人.jpg","刺客.jpg","派西維爾.jpg","莫甘娜.jpg","莫德雷德.jpg","奧伯倫.jpg"] ;
+	var imageList = ["board_5.jpg","board_6.jpg","board_7.jpg","board_8.jpg","board_9.jpg","board_10.jpg","mission_token.png","vote_token.png","fail_token.png","success_token.png","梅林.jpg","好人.jpg","壞人.jpg","刺客.jpg","派西維爾.jpg","莫甘娜.jpg","莫德雷德.jpg","奧伯倫.jpg","yes.jpg","no.jpg","caption.jpg","mission.jpg","god.png","vote_token2.jpg","unknown.jpg","good.jpg","bad.jpg","camp.jpg"] ;
 	var canvasMap = {} ;
 	var loadImageProgress = 0 ;
 	var imgMap = {} ;
@@ -99,6 +99,8 @@
 	document.getElementById("loginButton").addEventListener("click",function(){
 		if ( document.getElementById("nameInput").value === "" ){
 			alert("請輸入暱稱！") ;
+		} else if (  document.getElementById("nameInput").value.length > 6 ){
+			alert("最長只能六個字！")
 		} else {
 			if (stripHTML(document.getElementById("nameInput").value) === true ){
 				alert("請輸入合法字元！")
@@ -126,8 +128,15 @@
 			}
 			var div = document.createElement("div") ;
 			div.style.padding = "5px" ;
+			div.style.border = "1px solid black" ;
+			div.style.borderRadius = "5px" ;
 			var number = document.createElement("span") ;
-			number.innerHTML = roomList[i].number ;
+			var name = document.createElement("div") ;
+			name.innerHTML = "室長：" + roomList[i].creater ;
+			var people = document.createElement("div") ;
+			people.innerHTML = "人數："+roomList[i].people + "/10";
+			number.innerHTML = "房號："+roomList[i].number ;
+			div.appendChild(name);
 			div.appendChild(number);
 			if ( !roomList[i].start ){
 				var button = document.createElement("button") ;
@@ -149,6 +158,7 @@
 				}
 
 			}
+			div.appendChild(people);
 			document.getElementById("roomDisplayDiv").appendChild(div);
 		}
 	})
@@ -187,15 +197,15 @@
 		document.getElementById("godArea").innerHTML = "" ;
 		var kind = data.kind ;
 		var index = data.index ;
-		var result = document.createElement("span");
+		document.querySelectorAll(".campDiv")[index].innerHTML = "" ;
+		var campImg ;		
 		if ( kind === "good" ){
-			result.className = "w3-tag w3-blue w3-round" ;
+			campImg = imgMap["good.jpg"].cloneNode(true) ;
 		} else if ( kind === "bad" ){
-			result.className = "w3-tag w3-red w3-round" ;
+			campImg = imgMap["bad.jpg"].cloneNode(true) ;
 		}
-		result.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[index].innerHTML ;
-		document.getElementById("godResultArea").innerHTML = ""   ;
-		document.getElementById("godResultArea").appendChild(result);
+		campImg.classList.add("campImg") ;
+		document.querySelectorAll(".campDiv")[index].appendChild(campImg) ;
 	})
 	socket.on("changeCreater",function (data){
 		notificationUser("室長更換！");
@@ -217,6 +227,16 @@
 			roomNumber = number ;
 			socket.emit("resetRole",{number:number}) ;
 			document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
+			var leaveButton = document.createElement("button") ;
+			leaveButton.innerHTML = "離開房間" ;
+			leaveButton.className = "w3-btn w3-round w3-red" ;
+			leaveButton.id = "leaveButton" ;
+			leaveButton.addEventListener("click",function(){
+				socket.emit("leave",{user:userName,number:roomNumber});
+				show(document.getElementById("roomPage"));
+				hide(document.getElementById("gamePage"));
+			})
+			document.getElementById("numberDiv").appendChild(leaveButton);
 			if ( create === true ){
 				var button = document.createElement("button") ;
 				button.innerHTML = "開始" ;
@@ -246,22 +266,27 @@
 			}
 			hide(document.getElementById("roomPage"));
 			show(document.getElementById("gamePage"));
-			document.getElementById("userArea").innerHTML = "" ;
 			var user = data.user ;
 			var d = document.createElement("div") ;
 			d.innerHTML = user +" 加入房間" ;
 			notificationUser(user +" 加入房間");
 			document.getElementById("consoleArea").appendChild(d) ;
 
-			var ul = document.createElement("ul") ;
-			ul.className = "w3-ul w3-card-4" ;
-			for ( var i = 0 ; i < users.length ; i ++ ){
-				var u = document.createElement("li") ;
-				u.innerHTML = users[i] ;
-				ul.appendChild(u) ;
+			if ( data.isStart === false || document.getElementById("playerDiv").innerHTML === "" ){
+				document.getElementById("playerDiv").innerHTML = "" ;
+				for ( var i = 0 ; i < users.length ; i ++ ){
+					var u = document.createElement("div") ;
+					u.classList.add("player");
+					u.classList.add("w3-card-4");
+					var name = document.createElement("div") ;
+					name.classList.add("name") ;
+					name.classList.add("w3-border");
+					name.classList.add("w3-black");
+					name.innerHTML = users[i] ;
+					u.appendChild(name) ;
+					document.getElementById("playerDiv").appendChild(u) ;
+				}
 			}
-			document.getElementById("userArea").appendChild(ul);
-
 			drawBoard();
 		}
 		isJoining = false ;
@@ -275,16 +300,19 @@
 		var d = document.createElement("div") ;
 		d.innerHTML = user +" 離開房間" ;
 		document.getElementById("consoleArea").appendChild(d) ;
-
-		document.getElementById("userArea").innerHTML = "" ;
-		var ul = document.createElement("ul") ;
-		ul.className = "w3-ul w3-card-4" ;
+		document.getElementById("playerDiv").innerHTML = "" ;
 		for ( var i = 0 ; i < users.length ; i ++ ){
-			var u = document.createElement("li") ;
-			u.innerHTML = users[i] ;
-			ul.appendChild(u) ;
+			var u = document.createElement("div") ;
+			u.classList.add("player");
+			u.classList.add("w3-card-4");
+			var name = document.createElement("div") ;
+			name.classList.add("name") ;
+			name.classList.add("w3-border");
+			name.classList.add("w3-black");
+			name.innerHTML = users[i] ;
+			u.appendChild(name) ;
+			document.getElementById("playerDiv").appendChild(u) ;
 		}
-		document.getElementById("userArea").appendChild(ul);
 		drawBoard();
 	});
 
@@ -310,8 +338,6 @@
 		}); 
 	}
 	socket.on("restart", function (data){
-		document.getElementById("bArea").innerHTML = "" ;
-		document.getElementById("gameInfoArea").innerHTML = "" ;
 		document.getElementById("restartArea").innerHTML = "" ;
 		if ( creater === true ){
 			create = true ;
@@ -321,6 +347,16 @@
 		roomNumber = number ;
 		socket.emit("resetRole",{number:number}) ;
 		document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
+		var leaveButton = document.createElement("button") ;
+		leaveButton.innerHTML = "離開房間" ;
+		leaveButton.className = "w3-btn w3-round w3-red" ;
+		leaveButton.id = "leaveButton" ;
+		leaveButton.addEventListener("click",function(){
+			socket.emit("leave",{user:userName,number:roomNumber});
+			show(document.getElementById("roomPage"));
+			hide(document.getElementById("gamePage"));
+		})
+		document.getElementById("numberDiv").appendChild(leaveButton);
 		if ( create === true ){
 			var button = document.createElement("button") ;
 			button.innerHTML = "開始" ;
@@ -346,16 +382,6 @@
 		}
 		hide(document.getElementById("roomPage"));
 		show(document.getElementById("gamePage"));
-		document.getElementById("userArea").innerHTML = "" ;
-
-		var ul = document.createElement("ul") ;
-		ul.className = "w3-ul w3-card-4" ;
-		for ( var i = 0 ; i < users.length ; i ++ ){
-			var u = document.createElement("li") ;
-			u.innerHTML = users[i] ;
-			ul.appendChild(u) ;
-		}
-		document.getElementById("userArea").appendChild(ul);
 	})
 	socket.on("gameoverMessage" ,function (data){
 		notificationUser( "遊戲結束！");
@@ -363,15 +389,13 @@
 	});
 	socket.on("restartResult" ,function (data){
 		if ( data.status === "success" ){
-			document.getElementById("bArea").innerHTML = "" ;
-			document.getElementById("gameInfoArea").innerHTML = "" ;
 			document.getElementById("restartArea").innerHTML = "" ;
 			document.getElementById("eventArea").innerHTML = '<div id="chooseUserArea" class="w3-container"></div>' +
 			'<div id="chooseVoteArea" class="w3-container"></div>' +
 			'<div id="missionArea" class="w3-container"></div>' +
 			'<div id="godArea" class="w3-container"></div>' + 
 			'<div id="noticeArea" class="w3-container"></div>' +
-			'<div id="assArea" class="w3-container"></div>' + 
+			'<div id="assArea" class="w3-container"></div>' +
 			'<div id="restartArea" class="w3-container"></div>' ;
 			socket.emit("restart",{number:roomNumber}) ;
 		} else {	
@@ -396,10 +420,7 @@
 		*/
 	});
 	var setRoleList = function(data){
-		//document.getElementById("roleArea").innerHTML = "" ;
 		document.getElementById("roleDiv").innerHTML = "" ;
-		var ul = document.createElement("ul") ;
-		ul.className = "w3-ul w3-card-4 roleList" ;
 		if ( create === true ){
 			var oldRole = data.oldRole ;
 			if ( oldRole !== undefined ){
@@ -468,38 +489,7 @@
 				roleDiv.appendChild(roleContentDiv);
 			}
 			document.getElementById("roleDiv").appendChild(roleDiv);
-
-			/*
-			var h = document.createElement("h5") ;
-			h.innerHTML = data.role[i] ;
-			div.appendChild(h);
-			
-			if ( create === true ){
-				div.className += "" ;
-				var roles = document.createElement("ul") ;
-				roles.className = "w3-ul" ;
-				if ( getRoleKind(data.role[i]) === "good" && data.role[i] !== "梅林" ){
-					for ( var j = 0 ; j < goodRoleList.length ; j ++ ){
-						if ( goodRoleList[j] !==  data.role[i]) {
-							var role = setRole("good",j,h) ;
-							roles.appendChild(role) ;
-						}
-					}
-				} else if ( getRoleKind(data.role[i]) === "bad" && data.role[i] !== "刺客" ){
-					for ( var j = 0 ; j < badRoleList.length ; j ++ ){
-						if ( badRoleList[j] !== data.role[i] ){
-							var role = setRole("bad",j,h) ;
-							roles.appendChild(role) ;
-						}
-					}
-				}
-				div.appendChild(roles);
-			}
-			
-			ul.appendChild(div);
-			*/
 		}
-		//ocument.getElementById("roleArea").appendChild(ul);
 		drawBoard();
 	}
 	socket.on("role",function (data){
@@ -514,10 +504,7 @@
 			role = imgMap[badRoleList[index]+".jpg"].cloneNode(true) ;
 		}
 		role.classList.add("roleContentImg") ;
-		//ar role = document.createElement("li") ;
 		if ( kind === "good" ){
-			//role.style.backgroundColor = "#330066" ;
-			//role.innerHTML = goodRoleList[index] ;
 			role.addEventListener("click",function(){
 				socket.emit("role",{
 					oldRole : roleDiv.getAttribute("data-role") ,
@@ -527,8 +514,6 @@
 				goodRoleList.splice(index,1);
 			})
 		} else if ( kind === "bad" ){
-			//role.style.backgroundColor = "#990000" ;
-			//role.innerHTML = badRoleList[index] ;
 			role.addEventListener("click",function(){
 				socket.emit("role",{
 					oldRole : roleDiv.getAttribute("data-role") ,
@@ -558,13 +543,18 @@
 		document.getElementById("textArea").appendChild(text);
 		document.getElementById("textArea").scrollTop = document.getElementById("textArea").scrollHeight;
 	}); 
+	socket.on('messageFail', function (data) {
+		if ( data.status === 1 ){
+			alert("請輸入合法字元！") ;
+		}
+	}); 
 	document.getElementById("textInput").addEventListener("keypress",function(e){
 		if(e.keyCode === 13){ 
 			document.getElementById("textButton").click();
 		}
 	})
 	document.getElementById("textButton").addEventListener("click",function(){
-		if (stripHTML(document.getElementById("textInput").value) === "true") {
+		if (stripHTML(document.getElementById("textInput").value) === true) {
 			alert("請輸入合法字元！") ;
 		} else {
 			socket.emit('message',{number:roomNumber,text:document.getElementById("textInput").value,user:userName}) ;
@@ -577,39 +567,145 @@
 			bArray = [] ;
 			mArray = [] ;
 			gArray = [] ;
+			var user = data.user ;
+			var voteDoneArray = data.voteDoneArray ;
 			document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
 			hide(document.getElementById("roomPage"));
 			show(document.getElementById("gamePage"));
+			document.getElementById("playerDiv").innerHTML = "" ;
+			for ( var i = 0 ; i < user.length ; i ++ ){
+				var player = document.createElement("div") ;
+				player.classList.add("player");
+				player.classList.add("w3-card-4");
+				var name = document.createElement("div") ;
+				name.classList.add("name") ;
+				name.classList.add("w3-border");
+				name.classList.add("w3-black");
+				name.innerHTML = user[i] ;
+				player.appendChild(name) ;
+				var roleDiv = document.createElement("Div") ;
+				player.querySelector(".name").innerHTML = user[i] ;
 
-			var span = document.createElement("span") ;
-			span.innerHTML = data.c ;
-			document.getElementById("cArea").innerHTML = "你的角色是：" ;
-			if ( data.c=== "梅林" || data.c === "好人" || data.c=== "派西維爾"){
-				span.className = "w3-tag w3-blue w3-round" ;
-				gb = "g" ;
-			} else {
-				span.className = "w3-tag w3-red w3-round" ;
-				gb = "b" ;
-			}
-			document.getElementById("cArea").appendChild(span);
-			if (data.c === "梅林" || (getRoleKind(data.c) === "bad" && data.c !== "奧伯倫") ){
-				document.getElementById("bArea").innerHTML = "壞人是："  ;
-				bArray = data.b ;
-				for ( var i = 0 ; i < data.b.length ; i ++ ){				
-					var span = document.createElement("span") ;
-					span.className = "w3-tag w3-round-large w3-red" ;
-					span.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[data.b[i]].innerHTML ;
-					document.getElementById("bArea").appendChild(span) ;
+				if ( data.index === i ){
+					var role = imgMap[data.c+".jpg"].cloneNode(true) ;
+					role.classList.add("roleImg2") ;			
+					roleDiv.appendChild(role);	
+					roleDiv.classList.add("roleDiv");
+				} else {
+					if ( data.c === "派西維爾" ){
+						mArray = data.m ;
+						if ( mArray.indexOf(i) !== -1 ){		
+							var role = imgMap["梅林.jpg"].cloneNode(true) ;
+							role.classList.add("roleImg2") ;			
+							roleDiv.appendChild(role);	
+							roleDiv.classList.add("roleDiv");
+						} else {
+							var role = imgMap["unknown.jpg"].cloneNode(true) ;
+							role.classList.add("roleImg2") ;			
+							roleDiv.appendChild(role);	
+							roleDiv.classList.add("roleDiv");
+						}
+					} else {
+						var role = imgMap["unknown.jpg"].cloneNode(true) ;
+						role.classList.add("roleImg2") ;			
+						roleDiv.appendChild(role);	
+						roleDiv.classList.add("roleDiv");
+					}
 				}
-			} else if ( data.c === "派西維爾" ){
-				mArray = data.m ;
-				document.getElementById("bArea").innerHTML = "梅林是："  ;
-				for ( var i = 0 ; i < data.m.length ; i ++ ){				
-					var span = document.createElement("span") ;
-					span.className = "w3-tag w3-round-large w3-blue" ;
-					span.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[data.m[i]].innerHTML ;
-					document.getElementById("bArea").appendChild(span) ;
+				var tokenDiv = document.createElement("Div") ;
+				tokenDiv.classList.add("tokenDiv");
+				var tokenTopDiv = document.createElement("Div") ;
+				tokenTopDiv.classList.add("tokenTopDiv");
+				var tokenBottomDiv = document.createElement("Div") ;
+				tokenBottomDiv.classList.add("tokenBottomDiv");
+				player.appendChild(roleDiv) ;
+
+				var roleGuessDiv = document.createElement("div") ;
+				roleGuessDiv.classList.add("roleGuessDiv") ;
+				var roleGuessImg = imgMap["unknown.jpg"].cloneNode(true) ;
+				roleGuessImg.classList.add("roleGuessImg") ;
+				roleGuessDiv.appendChild(roleGuessImg) ;
+				tokenTopDiv.appendChild(roleGuessDiv) ;
+				if ( i === data.index ){
+					if ( data.c=== "梅林" || data.c === "好人" || data.c=== "派西維爾"){
+						gb = "g" ;
+						var campDiv = document.createElement("div") ;
+						var campImg = imgMap["good.jpg"].cloneNode(true) ;
+						campDiv.classList.add("campDiv") ;
+						campImg.classList.add("campImg") ;
+						campDiv.appendChild(campImg) ;
+						tokenTopDiv.appendChild(campDiv) ;
+					} else {
+						gb = "b" ;
+						var campDiv = document.createElement("div") ;
+						var campImg = imgMap["bad.jpg"].cloneNode(true) ;
+						campDiv.classList.add("campDiv") ;
+						campImg.classList.add("campImg") ;
+						campDiv.appendChild(campImg) ;
+						tokenTopDiv.appendChild(campDiv) ;
+					}
+				} else if (data.c === "梅林" || (getRoleKind(data.c) === "bad" && data.c !== "奧伯倫") ){
+					bArray = data.b ;
+					if ( bArray.indexOf(i) !== -1 ){						
+						var campDiv = document.createElement("div") ;
+						campDiv.classList.add("campDiv") ;
+						var campImg = imgMap["bad.jpg"].cloneNode(true) ;
+						campImg.classList.add("campImg") ;
+						campDiv.appendChild(campImg) ;
+						tokenTopDiv.appendChild(campDiv) ;
+					} else {
+						var campDiv = document.createElement("div") ;
+						campDiv.classList.add("campDiv") ;
+						var campImg = imgMap["camp.jpg"].cloneNode(true) ;
+						campImg.classList.add("campImg") ;
+						campDiv.appendChild(campImg) ;
+						tokenTopDiv.appendChild(campDiv) ;
+					}
+				} else {
+					var campDiv = document.createElement("div") ;
+					campDiv.classList.add("campDiv") ;
+					var campImg = imgMap["camp.jpg"].cloneNode(true) ;
+					campImg.classList.add("campImg") ;
+					campDiv.appendChild(campImg) ;
+					tokenTopDiv.appendChild(campDiv) ;
 				}
+				var vote_token2Div = document.createElement("div") ;
+				vote_token2Div.classList.add("vote_token2Div") ;
+				var vote_token2Img = imgMap["vote_token2.jpg"].cloneNode(true) ;
+				vote_token2Img.classList.add("vote_token2Img") ;
+				if ( voteDoneArray.indexOf(i) === -1 )
+					vote_token2Img.style.display = "none" ;
+				vote_token2Div.appendChild(vote_token2Img) ;
+				tokenTopDiv.appendChild(vote_token2Div) ;
+
+				var captionDiv = document.createElement("div") ;
+				captionDiv.classList.add("captionDiv") ;
+				var caption = imgMap["caption.jpg"].cloneNode(true) ;
+				caption.style.display = "none" ;
+				caption.classList.add("captionImg") ;
+				captionDiv.appendChild(caption) ;
+				tokenBottomDiv.appendChild(captionDiv) ;
+
+				var missionDiv = document.createElement("div") ;
+				missionDiv.classList.add("missionDiv") ;
+				var mission = imgMap["mission.jpg"].cloneNode(true) ;
+				mission.classList.add("mission") ;
+				mission.style.display = "none" ;
+				missionDiv.appendChild(mission) ;
+				tokenBottomDiv.appendChild(missionDiv) ;
+
+				var godDiv = document.createElement("div") ;
+				godDiv.classList.add("godDiv") ;
+				var god = imgMap["god.png"].cloneNode(true) ;
+				god.style.display = "none" ;
+				god.classList.add("godImg") ;
+				godDiv.appendChild(god) ;
+				tokenBottomDiv.appendChild(godDiv) ;
+
+				tokenDiv.appendChild(tokenTopDiv);
+				tokenDiv.appendChild(tokenBottomDiv);
+				player.appendChild(tokenDiv);
+				document.getElementById("playerDiv").appendChild(player);
 			}
 			addConsole("遊戲開始了！");
 			hide(document.getElementById("startButton"));
@@ -665,7 +761,7 @@
 		select.size = users.length ;
 		for ( var i = 0 ; i < users.length ; i ++ ){
 			var option = document.createElement("option") ;
-			option.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[users[i]].innerHTML  ;
+			option.innerHTML = document.querySelectorAll(".player")[users[i]].querySelector(".name").innerHTML  ;
 			option.value = users[i] ;
 			select.appendChild(option) ; 
 		} 
@@ -702,6 +798,13 @@
 			})
 		} 
 	});
+	socket.on("voted",function (data){
+		var index = data.index ;
+		document.querySelectorAll(".vote_token2Div")[index].innerHTML = "" ; 
+		var vote_token2Img = imgMap["vote_token2.jpg"].cloneNode(true) ;
+		vote_token2Img.classList.add("vote_token2Img");
+		document.querySelectorAll(".vote_token2Div")[index].appendChild(vote_token2Img) ;
+	});
 	socket.on("chooseUser",function (data){
 		notificationUser("輪到你投票！");
 		var users = data.users ;
@@ -711,6 +814,13 @@
 			if ( users.indexOf(i) !== -1 ){
 				missionDivs[i].className = "mission-div fa fa-users fa-x" ;
 			}
+		}
+
+		for ( var i = 0 ; i < document.querySelectorAll(".missionDiv").length ; i ++ ){
+			document.querySelectorAll(".missionDiv")[i].querySelector("img").style.display = "none" ;
+		}
+		for ( var i = 0 ; i < users.length ; i ++ ){
+			document.querySelectorAll(".missionDiv")[users[i]].querySelector("img").style.display = "" ;
 		}
 		document.getElementById("chooseUserArea").innerHTML = "" ;
 		document.getElementById("chooseVoteArea").innerHTML = "" ;
@@ -747,6 +857,17 @@
 	socket.on("voteResult",function (data){
 		notificationUser("投票結果出來了！");
 		var votes = data.votes ; 
+		for ( var i = 0 ; i < document.querySelectorAll(".vote_token2Div").length ; i ++ ){
+			document.querySelectorAll(".vote_token2Div")[i].innerHTML = "" ;
+			var vote_token2Img ;
+			if ( votes[i] === "y" ){
+				vote_token2Img = imgMap["yes.jpg"].cloneNode(true) ;
+			} else if ( votes[i] === "n" ){
+				vote_token2Img = imgMap["no.jpg"].cloneNode(true) ;
+			}
+			vote_token2Img.classList.add("vote_token2Img") ;
+			document.querySelectorAll(".vote_token2Div")[i].appendChild(vote_token2Img);
+		}
 		var voteDivs = document.querySelectorAll(".vote-div");
 		for ( var i = 0 ; i < voteDivs.length ; i ++ ){
 			if ( votes[i] === "y" ){
@@ -758,17 +879,6 @@
 	});
 	socket.on("rearrange",function (data){
 
-		document.getElementById("userArea").innerHTML = "" ;
-		var users = data.users ;
-		var ul = document.createElement("ul") ;
-		ul.className = "w3-ul w3-card-4" ;
-		for ( var i = 0 ; i < users.length ; i ++ ){
-			var u = document.createElement("li") ;
-			u.innerHTML = users[i] ;
-			ul.appendChild(u) ;
-		}
-
-		document.getElementById("userArea").appendChild(ul);
 	});
 	socket.on("status",function (data){
 		missionArray = data.missionArray ;
@@ -780,46 +890,15 @@
 		var success = data.success ;
 		var fail = data.fail ;
 		var godArray = data.godArray ;
-		var d = document.createElement("span") ;
-		d.className = "w3-teal w3-badge" ;
-		d.innerHTML = round ;
-		document.getElementById("roundArea").innerHTML = "任務：" ;
-		document.getElementById("roundArea").appendChild(d);
-		document.getElementById("amountArea").innerHTML = ""  ;
-		var p = document.createElement("i") ;
-		p.className = "fa fa-male" ;
-		document.getElementById("amountArea").appendChild(p) ;
-		document.getElementById("amountArea").innerHTML += " " + amount ;
-		var capt = document.createElement("span");
-		capt.className = "w3-tag w3-orange w3-round" ;
-		capt.innerHTML = cap ;
-		document.getElementById("captionArea").innerHTML = "隊長："   ;
-		document.getElementById("captionArea").appendChild(capt);
+		nowVote = vote ;
 
-		document.getElementById("nowGodArea").innerHTML = "女神：" ;
-		for ( var i = 0 ; i < godArray.length ; i ++ ){
-			var g = document.createElement("span") ;
-			g.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[godArray[i]].innerHTML ;
-			g.className = "w3-tag w3-teal w3-round" ;
-			document.getElementById("nowGodArea").appendChild(g);
-			document.getElementById("nowGodArea").innerHTML += "→";
+		for ( var i = 0 ; i < document.querySelectorAll(".godDiv").length ; i ++ ){
+			document.querySelectorAll(".godDiv")[i].querySelector("img").style.display = "none" ;
 		}
 
-		document.getElementById("sfvArea").innerHTML = "";
-		var s = document.createElement("span") ;
-		s.className = "w3-badge w3-blue" ;
-		s.innerHTML = success ;
-		var f = document.createElement("span") ;
-		f.className = "w3-badge w3-red" ;
-		f.innerHTML = fail ;
-		var v = document.createElement("span") ;
-		v.className = "w3-badge w3-yellow" ;
-		nowVote = vote ;
-		v.innerHTML = vote ;
-		document.getElementById("sfvArea").appendChild(s);
-		document.getElementById("sfvArea").appendChild(f);
-		document.getElementById("sfvArea").appendChild(v);
-		if ( parseInt(round) === 4 && document.getElementById("userArea").childNodes[0].childNodes.length >= 7 ){
+		document.querySelectorAll(".godDiv")[godArray[godArray.length-1]].querySelector("img").style.display = "" ;
+
+		if ( parseInt(round) === 4 && document.querySelectorAll(".player").length >= 7 ){
 			document.getElementById("noticeArea").innerHTML = "本回合需要兩個失敗才會任務失敗！" ;
 		} else {
 			document.getElementById("noticeArea").innerHTML = "" ;
@@ -827,62 +906,12 @@
 		if ( parseInt(vote) === 5){
 			document.getElementById("noticeArea").innerHTML += "<br>注意！這是最後一輪投票！" ;
 		}
-
 		
-		document.getElementById("gameInfoArea").innerHTML = "";
-		for ( var i = 0 , j = 0 ; i < document.getElementById("userArea").childNodes[0].childNodes.length ; i ++ ){
-			var div ;
-			if ( i % 3 === 0 ){
-				div = document.createElement("div") ;
-				div.className = "w3-quarter w3-container" ;
-				j ++ ;
-			}
-			var div2 = document.createElement("span") ;
-			div2.style.display = "inline-block" ;
-			var icon = document.createElement("i") ;
-			icon.className = "fa fa-male fa-5x" ;
-			var name = document.createElement("div") ;
-			name.className = "w3-tag w3-purple w3-round" ;
-			name.style.display = "block";
-			name.innerHTML = document.getElementById("userArea").childNodes[0].childNodes[i].innerHTML ;
-			if ( bArray.length !== 0 ){
-				if ( bArray.indexOf(i) !== -1 ){
-					icon.style.color = "red" ;
-				}
-			} 
-			if ( mArray.length !== 0 ){
-				if ( mArray.indexOf(i) !== -1 ){
-					icon.style.color = "purple" ;
-				}
-			} 
-			if ( parseInt(data.capIndex) === i ){
-				var di = document.createElement("div") ;
-				var star = document.createElement("i") ;
-				star.className = "fa fa-star fa-x" ;
-				di.appendChild(star);
-				div2.appendChild(di) ;
-			}
-
-			var di = document.createElement("div") ;
-			var miss = document.createElement("i") ;
-			miss.className = "mission-div"
-			di.appendChild(miss);
-			div2.appendChild(di) ;
-
-			var di = document.createElement("div") ;
-			var voteDiv = document.createElement("i") ;
-			voteDiv.className = "vote-div" ;
-			di.appendChild(voteDiv);
-			div2.appendChild(di) ;
-
-			div2.appendChild(name) ;
-			div2.appendChild(icon) ;
-			document.getElementById("gameInfoArea").appendChild(div2);
-			if ( i % 3 == 2 || i === document.getElementById("userArea").childNodes[0].childNodes.length -1 ){
-				//document.getElementById("gameInfoArea").appendChild(div) ;
-			}
+		for ( var i = 0 ; i < document.querySelectorAll(".captionDiv").length ; i ++ ){
+			document.querySelectorAll(".captionDiv")[i].querySelector("img").style.display = "none" ;
 		}
-		
+
+		document.querySelectorAll(".captionDiv")[data.capIndex].querySelector("img").style.display = "" ;
 		drawBoard();
 		
 	});
