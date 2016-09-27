@@ -92,6 +92,7 @@
 				show(document.getElementById("roomPage"));
 				getRoomList();
 				userName = '<img height="20px" src="'+document.getElementById("imageInput").value+'"></img>' ;
+				localStorage.socketId = "" ;
 			}
 		}
 	});
@@ -109,6 +110,7 @@
 				show(document.getElementById("roomPage"));
 				getRoomList();
 				userName = document.getElementById("nameInput").value ;
+				localStorage.socketId = "" ;
 			}
 		}
 	});
@@ -235,6 +237,8 @@
 				socket.emit("leave",{user:userName,number:roomNumber});
 				show(document.getElementById("roomPage"));
 				hide(document.getElementById("gamePage"));
+				document.getElementById("consoleArea").innerHTML = "" ;
+				localStorage.socketId = "" ;
 			})
 			document.getElementById("numberDiv").appendChild(leaveButton);
 			if ( create === true ){
@@ -355,6 +359,8 @@
 			socket.emit("leave",{user:userName,number:roomNumber});
 			show(document.getElementById("roomPage"));
 			hide(document.getElementById("gamePage"));
+			document.getElementById("consoleArea").innerHTML = "" ;
+			localStorage.socketId = "" ;
 		})
 		document.getElementById("numberDiv").appendChild(leaveButton);
 		if ( create === true ){
