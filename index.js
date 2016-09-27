@@ -124,6 +124,54 @@
 					room[number].disconnectCount ++ ;
 				if ( room[number] !== undefined && room[number].start === false ){
 					var index = room[number].id.indexOf(socket.id) ;
+					if ( index !== -1 ){
+						var user = room[number].user[index] ;
+						room[number].user.splice(index,1) ;
+						room[number].id.splice(index,1) ;
+						socket.leave(number);
+						io.sockets.in(number).emit("leave",{status:"success",users:room[number].user,"user":user,number:number});
+						resetRole(number);
+						showRole(number);
+						if ( room[number].user.length >= 10 ){
+							room[number].isFull = true ;
+						} else {
+							room[number].isFull = false ;
+						}
+						getRoomList();
+						if ( room[number].create === Users[socket.id].user ){
+							if ( room[number].user.length !== 0 ){
+								room[number].create = room[number].user[0] ;
+								io.sockets.in(number).emit('console',{console: "室長替換成 "+ room[number].user[0] , notify : true  }) ;
+								clients[room[number].id[0]].emit('changeCreater',{});
+								resetRole(number);
+								showRole(number);
+								io.sockets.in(number).emit("restart",{status:"success",users:room[number].user,number:number});
+							}  else {
+								delete room[number] ;
+								getRoomList();
+							}
+						} 			
+					}	
+				} else {
+					if ( room[number] !== undefined ){
+						room[number].disUser.push(socket.id);
+						var index = room[number].id.indexOf(socket.id) ;
+						var user = room[number].user[index] ;
+						io.sockets.in(number).emit('console',{console:user+" 斷線，請等候回復。" , notify : true }) ;
+						if ( room[number].disconnectCount === room[number].user.length ){
+							delete room[number] ;
+							getRoomList();
+						}
+					}
+				}
+			} 
+		});
+		socket.on('leave', function (data) {
+			var user = data.user ;
+			var number = data.number ;
+			if ( room[number] !== undefined ){
+				var index = room[number].id.indexOf(socket.id) ;
+				if ( index !== -1 ){
 					var user = room[number].user[index] ;
 					room[number].user.splice(index,1) ;
 					room[number].id.splice(index,1) ;
@@ -149,54 +197,10 @@
 							delete room[number] ;
 							getRoomList();
 						}
-					} 				
-				} else {
-					if ( room[number] !== undefined ){
-						room[number].disUser.push(socket.id);
-						var index = room[number].id.indexOf(socket.id) ;
-						var user = room[number].user[index] ;
-						io.sockets.in(number).emit('console',{console:user+" 斷線，請等候回復。" , notify : true }) ;
-						if ( room[number].disconnectCount === room[number].user.length ){
-							delete room[number] ;
-							getRoomList();
-						}
-					}
+					} 	
+					socket.join("roomList");
+					getRoomList();
 				}
-			} 
-		});
-		socket.on('leave', function (data) {
-			var user = data.user ;
-			var number = data.number ;
-			if ( room[number] !== undefined ){
-				var index = room[number].id.indexOf(socket.id) ;
-				var user = room[number].user[index] ;
-				room[number].user.splice(index,1) ;
-				room[number].id.splice(index,1) ;
-				socket.leave(number);
-				io.sockets.in(number).emit("leave",{status:"success",users:room[number].user,"user":user,number:number});
-				resetRole(number);
-				showRole(number);
-				if ( room[number].user.length >= 10 ){
-					room[number].isFull = true ;
-				} else {
-					room[number].isFull = false ;
-				}
-				getRoomList();
-				if ( room[number].create === Users[socket.id].user ){
-					if ( room[number].user.length !== 0 ){
-						room[number].create = room[number].user[0] ;
-						io.sockets.in(number).emit('console',{console: "室長替換成 "+ room[number].user[0] , notify : true  }) ;
-						clients[room[number].id[0]].emit('changeCreater',{});
-						resetRole(number);
-						showRole(number);
-						io.sockets.in(number).emit("restart",{status:"success",users:room[number].user,number:number});
-					}  else {
-						delete room[number] ;
-						getRoomList();
-					}
-				} 	
-				socket.join("roomList");
-				getRoomList();
 			}
 		});
 		socket.on("role",function (data){
