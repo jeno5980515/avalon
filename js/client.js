@@ -1,6 +1,6 @@
 (function(){
-	var socket = io.connect('http://my-avalon.herokuapp.com/');
-	//var socket = io.connect('localhost:8080');
+	//var socket = io.connect('http://my-avalon.herokuapp.com/');
+	var socket = io.connect('localhost:8080');
 	var gb = null 
 	var roomNumber = null ;
 	var role = null ;
@@ -570,6 +570,49 @@
 		}
 	});
 
+ 	var makeRoleGuess = function(i){
+		var roleGuessDiv = document.createElement("div") ;
+		roleGuessDiv.classList.add("roleGuessDiv") ;
+		var roleGuessImg = imgMap["unknown.jpg"].cloneNode(true) ;
+		roleGuessImg.classList.add("roleGuessImg") ;
+		roleGuessDiv.appendChild(roleGuessImg) ;
+
+		roleGuessDiv.classList.add("w3-dropdown-hover");
+		var roleGuessContentDiv = document.createElement("div") ;
+		roleGuessContentDiv.style.maxWidth = "240px" ;
+		roleGuessContentDiv.style.width = "45vw" ;
+		roleGuessContentDiv.style.backgroundColor = "transparent" ;
+		roleGuessContentDiv.classList.add("w3-dropdown-content");
+		var roleGuessImg1 = imgMap["unknown.jpg"].cloneNode(true) ;
+		roleGuessContentDiv.appendChild(roleGuessImg1);
+		var roleGuessImg2 = imgMap["梅林.jpg"].cloneNode(true) ;
+		roleGuessContentDiv.appendChild(roleGuessImg2);
+		var roleGuessImg3 = imgMap["派西維爾.jpg"].cloneNode(true) ;
+		roleGuessContentDiv.appendChild(roleGuessImg3);
+		var roleGuessImg4 = imgMap["好人.jpg"].cloneNode(true) ;
+		roleGuessContentDiv.appendChild(roleGuessImg4);
+		var roleGuessImg5 = imgMap["刺客.jpg"].cloneNode(true) ;
+		roleGuessContentDiv.appendChild(roleGuessImg5);
+		var roleGuessImg6 = imgMap["莫甘娜.jpg"].cloneNode(true) ;
+		roleGuessContentDiv.appendChild(roleGuessImg6);
+		var roleGuessImg7 = imgMap["莫德雷德.jpg"].cloneNode(true) ;
+		roleGuessContentDiv.appendChild(roleGuessImg7);
+		var roleGuessImg8 = imgMap["奧伯倫.jpg"].cloneNode(true) ;
+		roleGuessContentDiv.appendChild(roleGuessImg8);
+		var roleGuessImg9 = imgMap["壞人.jpg"].cloneNode(true) ;
+		roleGuessContentDiv.appendChild(roleGuessImg9);
+		roleGuessImg1.onclick = roleGuessImg2.onclick = roleGuessImg3.onclick = roleGuessImg4.onclick = roleGuessImg5.onclick = roleGuessImg6.onclick = roleGuessImg7.onclick = roleGuessImg8.onclick = roleGuessImg9.onclick = function(){
+			roleGuessImg.src = this.src ;
+		}
+		roleGuessContentDiv.style.maxWidth = "170px" ;
+		if ( i % 2 === 1 ){
+			roleGuessContentDiv.style.right = 0 ;
+		}
+		roleGuessImg1.className = roleGuessImg2.className = roleGuessImg3.className = roleGuessImg4.className = roleGuessImg5.className = roleGuessImg6.className = roleGuessImg7.className = roleGuessImg8.className = roleGuessImg9.className = "roleGuessOption" ;
+		roleGuessDiv.appendChild(roleGuessContentDiv);
+		return roleGuessDiv;
+ 	}
+
 	var startGame = function(data){
 		if ( data.status === "success" ){
 			bArray = [] ;
@@ -628,11 +671,7 @@
 				tokenBottomDiv.classList.add("tokenBottomDiv");
 				player.appendChild(roleDiv) ;
 
-				var roleGuessDiv = document.createElement("div") ;
-				roleGuessDiv.classList.add("roleGuessDiv") ;
-				var roleGuessImg = imgMap["unknown.jpg"].cloneNode(true) ;
-				roleGuessImg.classList.add("roleGuessImg") ;
-				roleGuessDiv.appendChild(roleGuessImg) ;
+				var roleGuessDiv = makeRoleGuess(i);
 				tokenTopDiv.appendChild(roleGuessDiv) ;
 				if ( i === data.index ){
 					if ( data.c=== "梅林" || data.c === "好人" || data.c=== "派西維爾"){

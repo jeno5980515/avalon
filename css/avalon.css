@@ -104,3 +104,8 @@ canvas{
 .roleGuessImg , .godImg , .mission , .captionImg, .vote_token2Img , .campImg{
 	width: 100%;
 }
+
+.roleGuessOption {
+	width: 10vw ;
+	max-width: 30px ;
+}

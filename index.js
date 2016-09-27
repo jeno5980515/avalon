@@ -3,8 +3,8 @@
 	var app = express();
 	var server = require('http').createServer(app);
 	var io = require('socket.io').listen(server);
-	server.listen(process.env.PORT || 8080);
-	//server.listen(8080);
+	//server.listen(process.env.PORT || 8080);
+	server.listen(8080);
 	app.use(express.static(__dirname ));
 	var amountList = [0,1,2,3,4,
 		[2,3,2,3,3],
@@ -156,11 +156,13 @@
 					if ( room[number] !== undefined ){
 						room[number].disUser.push(socket.id);
 						var index = room[number].id.indexOf(socket.id) ;
-						var user = room[number].user[index] ;
-						io.sockets.in(number).emit('console',{console:user+" 斷線，請等候回復。" , notify : true }) ;
-						if ( room[number].disconnectCount === room[number].user.length ){
-							delete room[number] ;
-							getRoomList();
+						if ( index !== -1 ){
+							var user = room[number].user[index] ;
+							io.sockets.in(number).emit('console',{console:user+" 斷線，請等候回復。" , notify : true }) ;
+							if ( room[number].disconnectCount === room[number].user.length ){
+								delete room[number] ;
+								getRoomList();
+							}
 						}
 					}
 				}
@@ -169,7 +171,7 @@
 		socket.on('leave', function (data) {
 			var user = data.user ;
 			var number = data.number ;
-			if ( room[number] !== undefined ){
+			if ( room[number] !== undefined && room[number].start === false ){
 				var index = room[number].id.indexOf(socket.id) ;
 				if ( index !== -1 ){
 					var user = room[number].user[index] ;
