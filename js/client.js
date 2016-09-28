@@ -115,6 +115,7 @@
 				userName = document.getElementById("nameInput").value ;
 				localStorage.socketId = "" ;
 
+				document.getElementsByName("spUserName")[0].appendChild( document.createTextNode(userName + ' ') );
 			}
 		}
 	});
@@ -157,6 +158,7 @@
 			var numberSpan = document.createElement("span") ;
 			numberSpan.innerHTML = "房號：" + roomList[i].number ;
 			leftDiv.appendChild(numberSpan);
+
 			// span Room Player
 			var playerSpan = document.createElement("span") ;
 			playerSpan.innerHTML = "人數：" + roomList[i].people + "/10" ;

@@ -55,9 +55,11 @@
 	</div>
 	<div id="roomPage" class="page room">
 		<div>
+			<label><span name="spUserName"></span>你好，歡迎加入阿瓦隆的世界</label>
 		</div>
 		<br />
 		<div>
+			<label>創建房間</label>
 			<div class="enterRoomDiv">
 				<div class="row">
 					<label class="col-sm-3" style="text-align: right;">密碼：</label>
@@ -68,11 +70,31 @@
 				</div>
 			</div>
 		</div>
-		房間大廳 <input type="checkbox" id="roomPlayingDisplayBox">只顯示可進入的房間<br>
-		<div class="enterRoomDiv" id="roomDisplayDiv">
 		<br />
 		<div>
+			<label>加入房間</label>
+			<div class="enterRoomDiv">
+				<div class="row">
+					<label class="col-sm-3" style="text-align: right;">房號：</label>
+					<div class="col-sm-6" style="padding-left: 0px">
+						<input placeholder="輸入房號" id="roomInput" class="form-control input-sm"></input>
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<label class="col-sm-3" style="text-align: right;">密碼：</label>
+					<div class="col-sm-6" style="padding-left: 0px">
+						<input placeholder="若無則留空" id="passwordJoin" class="form-control input-sm"></input>
+					</div>
+					<button id="joinButton" class="btn btn-sm btn-primary">加入房間</button>
+				</div>
+			</div>
+		</div>
+		<br />
+		<div>
+			<label>房間大廳</label>&nbsp;&nbsp;<label><input type="checkbox" id="roomPlayingDisplayBox">只顯示可進入的房間</label>
 			<br>
+			<div class="enterRoomDiv" id="roomDisplayDiv">
 			</div>
 		</div>
 	</div>
