@@ -53,20 +53,27 @@
 			</div>
 		</div>
 	</div>
-	<div id="roomPage" class="page">
-		創建房間
-		<div class="enterRoomDiv">
-			密碼<input placeholder="若無則留空" id="passwordCreate"></input>
-			<button id="createButton">創建房間</button>
+	<div id="roomPage" class="page room">
+		<div>
 		</div>
-		加入房間
-		<div class="enterRoomDiv">
-			房號<input placeholder="輸入房號" id="roomInput"></input>
-			密碼<input placeholder="若無則留空" id="passwordJoin"></input>
-			<button id="joinButton">進入房間</button>
+		<br />
+		<div>
+			<div class="enterRoomDiv">
+				<div class="row">
+					<label class="col-sm-3" style="text-align: right;">密碼：</label>
+					<div class="col-sm-6" style="padding-left: 0px">
+						<input placeholder="若無則留空" id="passwordCreate" class="form-control input-sm"></input>
+					</div>
+					<button id="createButton" class="btn btn-sm btn-primary">創建房間</button>
+				</div>
+			</div>
 		</div>
 		房間大廳 <input type="checkbox" id="roomPlayingDisplayBox">只顯示可進入的房間<br>
 		<div class="enterRoomDiv" id="roomDisplayDiv">
+		<br />
+		<div>
+			<br>
+			</div>
 		</div>
 	</div>
 	<div id="gamePage" class="page" >
