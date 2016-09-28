@@ -1,6 +1,6 @@
 (function(){
-	var socket = io.connect('http://avalon-test.herokuapp.com/');
-	//var socket = io.connect('http://my-avalon.herokuapp.com/');
+	//var socket = io.connect('http://avalon-test.herokuapp.com/');
+	var socket = io.connect('http://my-avalon.herokuapp.com/');
 	//var socket = io.connect('localhost:8080');
 	var gb = null 
 	var roomNumber = null ;
@@ -150,6 +150,7 @@
 				button.style.float = "right" ;
 				div.appendChild(button);
 				var password = document.createElement("input") ;
+				password.id = "password" + roomList[i].number ;
 				if ( roomList[i].password === true  ){
 					password.style.float = "right" ;
 					password.placehoder = "請輸入密碼" ;
@@ -159,7 +160,11 @@
 				button.onclick = function(){
 					if ( isJoining === false ){
 						isJoining = true ;
-						socket.emit("join",{user:userName,number:parseInt(this.getAttribute("data-number")),password:password.value}) ;
+						var passwordText = "" ;
+						if ( document.getElementById("password"+this.getAttribute("data-number")) !== null ){
+							passwordText = document.getElementById("password"+this.getAttribute("data-number")).value ;
+						} 
+						socket.emit("join",{user:userName,number:parseInt(this.getAttribute("data-number")),password:passwordText}) ;
 					}
 				}
 
@@ -328,31 +333,28 @@
 		}
 		drawBoard();
 	});
-	socket.on('create', function (data) {
-		alert(data.status);
-		if ( data.status === "success" ){
-			notificationUser("房間創建完成！");
-			alert(3);
-			create = true ;
-			creater = true ;
-			roomNumber = data.number ;
-			document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
-			hide(document.getElementById("roomPage"));
-			show(document.getElementById("gamePage"));
 
-			socket.emit("role",{ role : "梅林" , number : roomNumber } );
-			socket.emit("role",{ role : "好人" , number : roomNumber } );
-			socket.emit("role",{ role : "好人" , number : roomNumber });
-			socket.emit("role",{ role : "刺客" , number : roomNumber });
-			socket.emit("role",{ role : "壞人" , number : roomNumber });
-			drawBoard();
-			isCreating = false ;
-		} 
-	}); 
 	var createRoom = function(){
-		alert(userName);;
-		alert(document.getElementById("passwordCreate").value);
 		socket.emit('create', { user : userName , password : document.getElementById("passwordCreate").value });
+		socket.on('create', function (data) {
+			if ( data.status === "success" ){
+				notificationUser("房間創建完成！");
+				create = true ;
+				creater = true ;
+				roomNumber = data.number ;
+				document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
+				hide(document.getElementById("roomPage"));
+				show(document.getElementById("gamePage"));
+
+				socket.emit("role",{ role : "梅林" , number : roomNumber } );
+				socket.emit("role",{ role : "好人" , number : roomNumber } );
+				socket.emit("role",{ role : "好人" , number : roomNumber });
+				socket.emit("role",{ role : "刺客" , number : roomNumber });
+				socket.emit("role",{ role : "壞人" , number : roomNumber });
+				drawBoard();
+				isCreating = false ;
+			} 
+		}); 
 	}
 	socket.on("restart", function (data){
 		document.getElementById("restartArea").innerHTML = "" ;
@@ -878,7 +880,11 @@
 		for ( var i = 0 ; i < document.querySelectorAll(".missionDiv").length ; i ++ ){
 			document.querySelectorAll(".missionDiv")[i].querySelector("img").style.display = "none" ;
 		}
+		for ( var i = 0 ; i < document.querySelectorAll(".player").length ; i ++  ){
+			document.querySelectorAll(".player")[i].classList.remove("w3-yellow") ;
+		}
 		for ( var i = 0 ; i < users.length ; i ++ ){
+			document.querySelectorAll(".player")[users[i]].classList.add("w3-yellow") ;
 			document.querySelectorAll(".missionDiv")[users[i]].querySelector("img").style.display = "" ;
 		}
 		document.getElementById("chooseUserArea").innerHTML = "" ;
