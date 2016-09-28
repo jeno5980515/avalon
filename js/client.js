@@ -48,6 +48,7 @@
 			alert("回復失敗！") ;
 		} else {
 			hide(document.getElementById("loginPage"));
+			hide(document.getElementById("coverPage"));
 			hide(document.getElementById("roomPage"));
 			var number = data.number ;
 			var user = data.user ;
@@ -74,6 +75,7 @@
 			img.src = event.target.result;
 			userName = '<img height="20px" src="'+img.src+'"></img>' ;
 			hide(document.getElementById("loginPage"));
+			hide(document.getElementById("coverPage"));
 			show(document.getElementById("roomPage"));
 		};
 		reader.readAsDataURL(file);
@@ -107,6 +109,7 @@
 				alert("請輸入合法字元！")
 			} else {
 				hide(document.getElementById("loginPage"));
+				hide(document.getElementById("coverPage"));
 				show(document.getElementById("roomPage"));
 				getRoomList();
 				userName = document.getElementById("nameInput").value ;

@@ -11,22 +11,48 @@
 <link rel="stylesheet" href="css/avalon.css" />
 <script type="text/javascript" src="js/multiselect.js"></script>
 <script src="js/canvasAutoResizer.js"></script>
+<!-- Include Bootstrap style -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 <body>
-	<div id="loginPage" class="page">
-		可選擇顯示名稱為名字或圖片。<br>
-		<input placeholder="輸入你的暱稱" id="nameInput"></input>
-		<button id="loginButton">確認</button><br>
-		輸入圖片網址。<br>
-		<input placeholder="輸入圖片網址" id="imageInput"></input>
-		<button id="loginImageButton">確認</button><br>
+	<div id="coverPage" class="cover">
+		<img src="/image/cover.jpg" width="300px" height="400px" />
+	</div>
+	<div id="loginPage" class="page loading">
+		<div class="row">
+			<div class="col-sm-7">
+				可選擇顯示名稱為名字或圖片。<br>
+				<div class="input-group">
+					<input placeholder="輸入你的暱稱" id="nameInput" class="form-control input-sm"></input>
+					<span class="input-group-btn">
+						<button id="loginButton" class="btn btn-sm btn-primary">確認</button>
+					</span>
+				</div>
+			</div>
+		</div>
+		<br />
+		<div class="row">
+			<div class="col-sm-7">
+				<div class="input-group">
+					<input placeholder="輸入圖片網址" id="imageInput"  class="form-control input-sm"></input>
+					<span class="input-group-btn">
+						<button id="loginImageButton" class="btn btn-sm btn-primary">確認</button>
+					</span>
+				</div>
+			</div>
+		</div>
+		<br />
 		<!--
 		上傳一張圖片。<br>
 		<input type="file" id="uploadImage"></input><br>
 		-->
-		<div style="color:red;">若遊戲斷線，可直接按回覆紀錄回到房間！</div>
-		<button id="recoverButton">回復紀錄</button>
-	</div>	
+		<div class="row">
+			<div class="col-sm-7">
+				<span style="color:red; font-size: x-small;">若遊戲斷線，可直接按回復紀錄回到房間！</span>
+				<button id="recoverButton" class="btn btn-xs btn-info">回復紀錄</button>
+			</div>
+		</div>
+	</div>
 	<div id="roomPage" class="page">
 		創建房間
 		<div class="enterRoomDiv">
