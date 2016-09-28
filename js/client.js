@@ -328,31 +328,31 @@
 		}
 		drawBoard();
 	});
+	socket.on('create', function (data) {
+		alert(data.status);
+		if ( data.status === "success" ){
+			notificationUser("房間創建完成！");
+			alert(3);
+			create = true ;
+			creater = true ;
+			roomNumber = data.number ;
+			document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
+			hide(document.getElementById("roomPage"));
+			show(document.getElementById("gamePage"));
 
+			socket.emit("role",{ role : "梅林" , number : roomNumber } );
+			socket.emit("role",{ role : "好人" , number : roomNumber } );
+			socket.emit("role",{ role : "好人" , number : roomNumber });
+			socket.emit("role",{ role : "刺客" , number : roomNumber });
+			socket.emit("role",{ role : "壞人" , number : roomNumber });
+			drawBoard();
+			isCreating = false ;
+		} 
+	}); 
 	var createRoom = function(){
-		alert(socket);
+		alert(userName);;
+		alert(document.getElementById("passwordCreate").value);
 		socket.emit('create', { user : userName , password : document.getElementById("passwordCreate").value });
-		socket.on('create', function (data) {
-			alert(data.status);
-			if ( data.status === "success" ){
-				notificationUser("房間創建完成！");
-				alert(3);
-				create = true ;
-				creater = true ;
-				roomNumber = data.number ;
-				document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
-				hide(document.getElementById("roomPage"));
-				show(document.getElementById("gamePage"));
-
-				socket.emit("role",{ role : "梅林" , number : roomNumber } );
-				socket.emit("role",{ role : "好人" , number : roomNumber } );
-				socket.emit("role",{ role : "好人" , number : roomNumber });
-				socket.emit("role",{ role : "刺客" , number : roomNumber });
-				socket.emit("role",{ role : "壞人" , number : roomNumber });
-				drawBoard();
-				isCreating = false ;
-			} 
-		}); 
 	}
 	socket.on("restart", function (data){
 		document.getElementById("restartArea").innerHTML = "" ;
