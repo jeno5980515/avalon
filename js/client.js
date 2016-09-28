@@ -31,10 +31,6 @@
 	var isCreating = false ; 
 	var missionArray = [] ;
 
-
-	  var elem = document.createElement('canvas');
-	  alert( !!(elem.getContext && elem.getContext('2d')));
-
 	var hide = self.hide = function(el){
 		if ( !el )
 			return ;
@@ -1053,7 +1049,7 @@
 
 	function Notify(message)
 	{
-	    if ('undefined' === typeof notification)
+	    if (undefined === typeof notification)
 	        return false;       //Not supported....
 	    var noty = new notification(
 	        "Avalon", {
