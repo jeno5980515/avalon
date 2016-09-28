@@ -26,6 +26,7 @@
 	var nowRound = 1 ;
 	var nowVote = 1 ;
 	var isJoining = false ; 
+	var isCreating = false ; 
 	var missionArray = [] ;
 	var hide = self.hide = function(el){
 		if ( !el )
@@ -180,7 +181,10 @@
 
 
 	document.getElementById("createButton").addEventListener("click",function(){
-		createRoom();
+		if ( isCreating === false ){
+			isCreating = true ;
+			createRoom();
+		}
 	});
 
 	window.onbeforeunload = function() {
@@ -295,6 +299,7 @@
 			drawBoard();
 		}
 		isJoining = false ;
+		isCreating = false ;
 	});
 
 	socket.on("leave", function (data){
@@ -339,6 +344,7 @@
 				socket.emit("role",{ role : "刺客" , number : roomNumber });
 				socket.emit("role",{ role : "壞人" , number : roomNumber });
 				drawBoard();
+				isCreating = false ;
 			} 
 		}); 
 	}
