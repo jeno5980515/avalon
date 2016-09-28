@@ -1,5 +1,6 @@
 (function(){
-	var socket = io.connect('http://my-avalon.herokuapp.com/');
+	var socket = io.connect('http://avalon-test.herokuapp.com/');
+	//var socket = io.connect('http://my-avalon.herokuapp.com/');
 	//var socket = io.connect('localhost:8080');
 	var gb = null 
 	var roomNumber = null ;
@@ -1030,6 +1031,7 @@
 
 	//document.addEventListener('visibilitychange', visibleChangeHandler, false);
 	var notification = window.Notification || window.mozNotification || window.webkitNotification;
+	alert(notification);
 	notification.requestPermission(function(permission){});
 
 	var originalTitle = '', messageCount = 0;
