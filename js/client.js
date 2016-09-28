@@ -30,6 +30,11 @@
 	var isJoining = false ; 
 	var isCreating = false ; 
 	var missionArray = [] ;
+
+
+	  var elem = document.createElement('canvas');
+	  alert( !!(elem.getContext && elem.getContext('2d')));
+
 	var hide = self.hide = function(el){
 		if ( !el )
 			return ;
