@@ -149,14 +149,17 @@
 				var password = document.createElement("input") ;
 				if ( roomList[i].password === true  ){
 					password.style.float = "right" ;
-					password.placehoder = "請輸入密碼" ;
+					password.placeholder = "請輸入密碼" ;
+					password.id = "Password_Room_" + roomList[i].number ;
 					div.appendChild(password);
 				}
 				button.setAttribute("data-number",roomList[i].number);
 				button.onclick = function(){
 					if ( isJoining === false ){
 						isJoining = true ;
-						socket.emit("join",{user:userName,number:parseInt(this.getAttribute("data-number")),password:password.value}) ;
+						var number = this.getAttribute("data-number") ;
+						var password = document.getElementById("Password_Room_" + number) ;
+						socket.emit("join",{user:userName,number:parseInt(number),password:password.value}) ;
 					}
 				}
 
