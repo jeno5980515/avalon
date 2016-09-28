@@ -6,6 +6,7 @@
 	var roomNumber = null ;
 	var role = null ;
 	var userName = null ;
+	var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 	var create = false ;
 	var creater = false ;
 	var godSet = false ;
@@ -1031,15 +1032,18 @@
 
 	//document.addEventListener('visibilitychange', visibleChangeHandler, false);
 	var notification = window.Notification || window.mozNotification || window.webkitNotification;
-	alert(notification);
-	notification.requestPermission(function(permission){});
+	if ( notification !== undefined ){ 
+		notification.requestPermission(function(permission){});
+	}
 
 	var originalTitle = '', messageCount = 0;
 	function notificationUser(message)
 	{
-	    if (document['hidden']) {
-	        Notify(message)
-	    }
+		if ( notification !== undefined ){
+		    if (document['hidden']) {
+		        Notify(message)
+		    }
+		}
 	}
 
 	function Notify(message)
