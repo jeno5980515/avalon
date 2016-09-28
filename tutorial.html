@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Avalon</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<div class="slides">
+				<section>
+					<h1>首頁</h1>
+					<img src="tutorial/1.png"></png>
+					<p>輸入好暱稱後進入遊戲大廳，若遊戲進行到一半斷線，點擊回覆紀錄可以回到進行中的遊戲。</p>
+				</section>
+				<section>
+					<h1>遊戲大廳</h1>
+					<img src="tutorial/2.jpg" height="300px"></png>
+					<p>創建房間：若不想設密碼直接創建即可。</p>
+					<p>加入房間：加入特定房間使用。</p>
+				</section>
+				<section>
+					<h1>遊戲房間</h1>
+					<img src="tutorial/3.jpg" height="300px"></png>
+					<p>室長可選擇是否開啟湖中女神，以及開始遊戲。</p>
+				</section>
+				<section>
+					<img src="tutorial/4.jpg"></png>
+					<p>室長可更換角色。</p>
+					<p>若有玩家進出房間，角色會重置。</p>
+				</section>	
+				<section>
+					<img src="tutorial/14.jpg"></png>
+					<p>若是玩家中途斷線，可等待他回覆遊戲，或者任意一位玩家可在此處提出中斷遊戲要求，當過半數玩家同意則會回到房間</p>
+				</section>
+				<section>
+					<img src="tutorial/5.jpg"></png>
+					<p>可在這裡看到目前第幾輪投票，第幾輪任務以及需求人數。</p>
+				</section>
+				<section>
+					<h1>玩家</h1>
+					<img src="tutorial/7.jpg"></png>
+					<p>可看到自己的角色，若有特殊能力或使用女神能看到其他玩家的陣營</p>
+				</section>
+				<section>
+					<img src="tutorial/8.jpg"></png>
+					<p>可自己猜測該名角色為何以提醒自己。</p>
+				</section>
+				<section>
+					<img src="tutorial/10.jpg"></png>
+					<p>隊長選擇出任務的人</p>
+				</section>
+				<section>
+					<img src="tutorial/11.jpg"></png>
+					<p>看當前任務人選決定是否贊成，以及誰尚未投票</p>
+				</section>
+				<section>
+					<img src="tutorial/12.jpg"></png>
+					<p>投票結果</p>
+				</section>
+				<section>
+					<img src="tutorial/6.jpg"></png>
+					<p>決定自己出任務成功或失敗，若是好人則只有成功選項</p>
+				</section>
+				<section>
+					<img src="tutorial/13.jpg"></png>
+					<p>遊戲紀錄以及聊天記錄。</p>
+				</section>	
+				<section>
+					<h1>The End</h1>
+					<p>希望您會喜歡！若有Bug煩請向我聯絡！jeno5980515@yahoo.com.tw</p>
+				</section>					
+			</div>
+
+		</div>
+
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
