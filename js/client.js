@@ -6,7 +6,7 @@
 	var roomNumber = null ;
 	var role = null ;
 	var userName = null ;
-	var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
+	//var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 	var create = false ;
 	var creater = false ;
 	var godSet = false ;
