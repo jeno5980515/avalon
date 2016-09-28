@@ -49,6 +49,7 @@
 			alert("回復失敗！") ;
 		} else {
 			hide(document.getElementById("loginPage"));
+			hide(document.getElementById("coverPage"));
 			hide(document.getElementById("roomPage"));
 			var number = data.number ;
 			var user = data.user ;
@@ -75,6 +76,7 @@
 			img.src = event.target.result;
 			userName = '<img height="20px" src="'+img.src+'"></img>' ;
 			hide(document.getElementById("loginPage"));
+			hide(document.getElementById("coverPage"));
 			show(document.getElementById("roomPage"));
 		};
 		reader.readAsDataURL(file);
@@ -108,10 +110,13 @@
 				alert("請輸入合法字元！")
 			} else {
 				hide(document.getElementById("loginPage"));
+				hide(document.getElementById("coverPage"));
 				show(document.getElementById("roomPage"));
 				getRoomList();
 				userName = document.getElementById("nameInput").value ;
 				localStorage.socketId = "" ;
+
+				document.getElementsByName("spUserName")[0].appendChild( document.createTextNode(userName + ' ') );
 			}
 		}
 	});
@@ -129,39 +134,86 @@
 				if ( roomList[i].start )
 					continue ;
 			}
+
+			var brEle = document.createElement("br");
+
+			// div Room
 			var div = document.createElement("div") ;
 			div.style.padding = "5px" ;
 			div.style.border = "1px solid black" ;
 			div.style.borderRadius = "5px" ;
-			var number = document.createElement("span") ;
-			var name = document.createElement("div") ;
-			name.innerHTML = "室長：" + roomList[i].creater ;
-			var people = document.createElement("div") ;
-			people.innerHTML = "人數："+roomList[i].people + "/10";
-			number.innerHTML = "房號："+roomList[i].number ;
-			div.appendChild(name);
-			div.appendChild(number);
+			div.style.marginRight = "0px" ;
+			div.style.marginLeft = "0px" ;
+			div.classList.add("row") ;
+
+			// div Left Romm Info
+			var leftDiv = document.createElement("div") ;
+			leftDiv.classList.add("col-sm-6") ;
+
+			// span Room Master
+			var masterSpan = document.createElement("span") ;
+			masterSpan.innerHTML = "室長：" + roomList[i].creater ;
+			leftDiv.appendChild(masterSpan);
+
+			// span Room Number
+			var numberSpan = document.createElement("span") ;
+			numberSpan.innerHTML = "房號：" + roomList[i].number ;
+			leftDiv.appendChild(numberSpan);
+
+			// span Room Player
+			var playerSpan = document.createElement("span") ;
+			playerSpan.innerHTML = "人數：" + roomList[i].people + "/10" ;
+			leftDiv.appendChild(playerSpan);
+
+			leftDiv.appendChild(masterSpan);
+			leftDiv.appendChild(brEle.cloneNode(true));
+			leftDiv.appendChild(numberSpan);
+			leftDiv.appendChild(brEle.cloneNode(true));
+			leftDiv.appendChild(playerSpan);
+
+			// div Right PW Enter
+			var rightDiv = document.createElement("div") ;
+			rightDiv.classList.add("col-sm-6") ;
+
+			// break
+			rightDiv.appendChild(brEle.cloneNode(true));
+
+			// text PW & button Enter
 			if ( !roomList[i].start ){
+				var pwEnterDiv = document.createElement("div") ;
+				pwEnterDiv.classList.add("row");
+
 				var button = document.createElement("button") ;
 				button.innerHTML = "進入" ;
 				button.style.float = "right" ;
-				div.appendChild(button);
-				var password = document.createElement("input") ;
-				if ( roomList[i].password === true  ){
-					password.style.float = "right" ;
-					password.placehoder = "請輸入密碼" ;
-					div.appendChild(password);
-				}
-				button.setAttribute("data-number",roomList[i].number);
-				button.onclick = function(){
+				button.classList.add("btn", "btn-sm", "btn-primary") ;
+				button.setAttribute("data-number", roomList[i].number) ;
+				button.onclick = function() {
 					if ( isJoining === false ){
 						isJoining = true ;
 						socket.emit("join",{user:userName,number:parseInt(this.getAttribute("data-number")),password:password.value}) ;
 					}
 				}
+				pwEnterDiv.appendChild(button) ;
 
+				var password = document.createElement("input") ;
+				if ( roomList[i].password === true  ){
+					password.style.float = "right" ;
+					password.style.width = "70%" ;
+					password.placeholder = "房間密碼" ;
+					password.classList.add("form-control", "input-sm") ;
+					pwEnterDiv.appendChild(password) ;
+				}
+
+				rightDiv.appendChild(pwEnterDiv);
 			}
-			div.appendChild(people);
+
+			// break
+			rightDiv.appendChild(brEle.cloneNode(true));
+
+			div.appendChild(leftDiv);
+			div.appendChild(rightDiv);
+
 			document.getElementById("roomDisplayDiv").appendChild(div);
 		}
 	})
