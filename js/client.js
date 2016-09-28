@@ -184,11 +184,9 @@
 
 
 	document.getElementById("createButton").addEventListener("click",function(){
-		alert(1);
 		if ( isCreating === false ){
 			isCreating = true ;
 			createRoom();
-			alert(2);
 		}
 	});
 
@@ -332,10 +330,13 @@
 	});
 
 	var createRoom = function(){
+		alert(socket);
 		socket.emit('create', { user : userName , password : document.getElementById("passwordCreate").value });
 		socket.on('create', function (data) {
+			alert(data.status);
 			if ( data.status === "success" ){
 				notificationUser("房間創建完成！");
+				alert(3);
 				create = true ;
 				creater = true ;
 				roomNumber = data.number ;
