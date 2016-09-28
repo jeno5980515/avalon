@@ -184,9 +184,11 @@
 
 
 	document.getElementById("createButton").addEventListener("click",function(){
+		alert(1);
 		if ( isCreating === false ){
 			isCreating = true ;
 			createRoom();
+			alert(2);
 		}
 	});
 
