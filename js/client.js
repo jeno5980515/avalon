@@ -153,7 +153,7 @@
 				password.id = "password" + roomList[i].number ;
 				if ( roomList[i].password === true  ){
 					password.style.float = "right" ;
-					password.placehoder = "請輸入密碼" ;
+					password.placeholder = "請輸入密碼" ;
 					div.appendChild(password);
 				}
 				button.setAttribute("data-number",roomList[i].number);
