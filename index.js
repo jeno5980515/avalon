@@ -29,15 +29,8 @@
 	app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 	  extended: true
 	})); 
-
-	app.post("/notice", function (req, res) {
-		var account = req.body.account ;
-		var pass = req.body.pass ;
-		if ( account === "ajiavalon" && pass === "ajiavalon" ){
-			var content = req.body.content ;
-			updateNotice(content);
-		}
-	});
+	
+	// delete the notice part!
 
 	var updateNotice = function(data){
 		var fs = require('fs');
