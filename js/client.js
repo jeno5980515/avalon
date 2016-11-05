@@ -1130,4 +1130,13 @@
 		boardCtx.drawImage(canvasMap["mission_token.png"],(92*(nowRound-1))+63,155);
 	}
 
+	var getNotice = function(){
+		socket.emit("notice",{});
+	}
+
+	socket.on("notice",function (data){
+		document.getElementById("noticeDiv").innerHTML = "<br>作者公告：<br>" + data.notice ;
+	})
+	getNotice();
+
 })();

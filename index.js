@@ -24,6 +24,31 @@
 		["梅林","好人","好人","好人","好人","好人","刺客","壞人","壞人","壞人"]
 	]
 
+	var bodyParser = require('body-parser')
+	app.use( bodyParser.json() );       // to support JSON-encoded bodies
+	app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+	  extended: true
+	})); 
+
+	app.post("/notice", function (req, res) {
+		var account = req.body.account ;
+		var pass = req.body.pass ;
+		if ( account === "ajiavalon" && pass === "ajiavalon" ){
+			var content = req.body.content ;
+			updateNotice(content);
+		}
+	});
+
+	var updateNotice = function(data){
+		var fs = require('fs');
+		fs.writeFile("notice", data, function(err) {
+		    if(err) {
+		        console.log(err);
+		    } else {
+		        //console.log("The file was saved!");
+		    }
+		});
+	}
 
 	var room = {} ;
 	var clients = {} ;
@@ -799,6 +824,17 @@
 					}
 				}
 			}
+		});
+		socket.on("notice",function (data){
+			console.log(1);
+			var fs = require("fs"),
+			    filename = "notice",
+			    encode = "utf8";
+
+			fs.readFile(filename, encode, function(err, file) {
+				console.log(file);
+			  socket.emit("notice",{notice:file});
+			});
 		});
 	});
 
