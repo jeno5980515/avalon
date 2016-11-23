@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Avalon</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.socket.io/socket.io-1.4.3.js"></script>
+<link rel="stylesheet" href="css/w3.css"/>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="css/multiselect.css" />
+<link rel="stylesheet" href="css/avalon.css" />
+<script type="text/javascript" src="js/multiselect.js"></script>
+<script src="js/canvasAutoResizer.js"></script>
+</head>
+<body>
+	<div id="loginPage" class="page">
+		可選擇顯示名稱為名字或圖片。<br>
+		<input placeholder="輸入你的暱稱" id="nameInput"></input>
+		<button id="loginButton">確認</button><br>
+		輸入圖片網址。<br>
+		<input placeholder="輸入圖片網址" id="imageInput"></input>
+		<button id="loginImageButton">確認</button><br>
+		<!--
+		上傳一張圖片。<br>
+		<input type="file" id="uploadImage"></input><br>
+		-->
+		<div style="color:red;">若遊戲斷線，可直接按回覆紀錄回到房間！</div>
+		<button id="recoverButton">回復紀錄</button><br><br>
+		<a href="https://rawgit.com/jeno5980515/avalon/master/tutorial.html#/" target="_blank" style="color:blue;">遊戲系統介紹！</a>
+		<div id="noticeDiv">
+		</div>
+	</div>	
+	<div id="roomPage" class="page">
+		創建房間
+		<div class="enterRoomDiv">
+			密碼<input placeholder="若無則留空" id="passwordCreate"></input>
+			<button id="createButton">創建房間</button>
+		</div>
+		加入房間
+		<div class="enterRoomDiv">
+			房號<input placeholder="輸入房號" id="roomInput"></input>
+			密碼<input placeholder="若無則留空" id="passwordJoin"></input>
+			<button id="joinButton">進入房間</button>
+		</div>
+		房間大廳 <input type="checkbox" id="roomPlayingDisplayBox">只顯示可進入的房間<br>
+		<div class="enterRoomDiv" id="roomDisplayDiv">
+		</div>
+	</div>
+	<div id="gamePage" class="page" >
+		<header id="numberDiv" class="w3-container w3-teal"></header>
+		<button id="restartButton">中斷遊戲</button>
+		<div id="restartArea"></div>
+		<div id="roleDiv"></div>
+		<div id="boardDiv"></div>
+		<div id="playerDiv" class="w3-ul w3-card-4"></div>
+		<div id="eventArea" class="w3-container">
+			<div id="chooseUserArea" class="w3-container"></div>
+			<div id="chooseVoteArea" class="w3-container"></div>
+			<div id="missionArea" class="w3-container"></div>
+			<div id="godArea" class="w3-container"></div>
+			<div id="noticeArea" class="w3-container"></div>
+			<div id="assArea" class="w3-container"></div>
+			<div id="restartArea" class="w3-container"></div>
+		</div>
+		<footer class="w3-row" id="wordArea">
+			<div id="consoleArea" class="w3-container w3-half w3-border"></div>
+			<div class="w3-container w3-half">
+				<div id="textArea" class="w3-container  w3-border"></div>
+				<div id="textInputArea" class="w3-container">
+					<input placeholder="輸入你的訊息" id="textInput"></input>
+					<button id="textButton">送出</button>
+				</div>
+			</div>
+		</footer>
+	</div>
+	<script src="js/client.js">
+</script>
+</body>
+</html>

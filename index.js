@@ -1,11 +1,15 @@
 (function(){
 	var express = require('express');
+
+	//var httpProxy = require('http-proxy');
+	//var proxy = httpProxy.createProxyServer({}) ;
+
 	var app = express();
 	var server = require('http').createServer(app);
 	var io = require('socket.io').listen(server);
-	server.listen(process.env.PORT || 8080);
-	//server.listen(8080);
-	app.use(express.static(__dirname ));
+	//server.listen(process.env.PORT || 8080);
+	server.listen(8080);
+	app.use('/avalon',express.static(__dirname ));
 	var amountList = [0,1,2,3,4,
 		[2,3,2,3,3],
 		[2,3,4,3,4],
