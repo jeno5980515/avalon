@@ -1,7 +1,8 @@
 (function(){
-	//var socket = io.connect('http://avalon-test.herokuapp.com/');
+	var socket = io.connect('http://avalon-test.herokuapp.com/');
 	//var socket = io.connect('http://elefanfan.com:8080/avalon');
-	var socket = io.connect('http://elefanfan.com:8080');
+	//var socket = io.connect('http://elefanfan.com:8070');
+	//var socket = io.connect('http://localhost:8080');
 	var gb = null 
 	var roomNumber = null ;
 	var role = null ;
@@ -30,6 +31,57 @@
 	var isJoining = false ; 
 	var isCreating = false ; 
 	var missionArray = [] ;
+	var uid ;
+
+	var login = window.login = function(data){
+		uid = data.id ;
+		$.post("http://elefanfan.com:8070/login",{id:uid},function(data){
+			if ( data.status === "exist" ){
+				var name = data.name ;
+				hide(document.getElementById("loginPage"));
+				show(document.getElementById("roomPage"));
+				getRoomList();
+				userName = name ;
+				localStorage.socketId = "" ;
+			} else if ( data.status === "new" ){	
+				hide(document.getElementById("loginPage"));
+				show(document.getElementById("namePage"));
+			}
+		});
+		document.getElementById("nameButton").addEventListener("click",function(){
+			var name = document.getElementById("setNameInput").value ; 
+			if ( name === "" ){
+				alert("請輸入暱稱！") ;
+			} else if (  name.length > 6 ){
+				alert("最長只能六個字！")
+			} else {
+				if (stripHTML(name) === true ){
+					alert("請輸入合法字元！")
+				} else {
+					$.post("http://elefanfan.com:8070/new",{ id : uid , name : name },function(data){
+						if ( data.status === "success" ){
+							hide(document.getElementById("loginPage"));
+							show(document.getElementById("roomPage"));
+							getRoomList();
+							userName = name ;
+							localStorage.socketId = "" ;
+						} else if ( data.status === "fail" ){	
+							alert("暱稱重複！");
+						} else if ( data.status === "exist" ){
+							alert("帳號已存在。");
+						} else if ( data.status === "invalid" ){
+							alert("暱稱無效。");
+						}
+					});
+				}
+			}
+		})
+		/*
+		getRoomList();
+		userName = document.getElementById("nameInput").value ;
+		localStorage.socketId = "" ;
+		*/
+	}
 
 	var hide = self.hide = function(el){
 		if ( !el )
@@ -1138,5 +1190,7 @@
 		document.getElementById("noticeDiv").innerHTML = "<br>作者公告：<br>" + data.notice ;
 	})
 	getNotice();
+
+	hide(document.getElementById("namePage"));
 
 })();
