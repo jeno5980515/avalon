@@ -8,10 +8,10 @@
 	var app = express();
 	var server = require('http').createServer(app);
 	var io = require('socket.io').listen(server);
-	server.listen(process.env.PORTs || 8080);
-	//server.listen(8080);
-	//app.use('/avalon',express.static(__dirname ));
-	app.use('/',express.static(__dirname ));
+	//server.listen(process.env.PORTs || 8080);
+	server.listen(8070);
+	app.use('/avalon',express.static(__dirname ));
+	//app.use('/',express.static(__dirname ));
 
 
 	var amountList = [0,1,2,3,4,
@@ -129,7 +129,7 @@
 		  			}
 				});
 			}
-		});
+		};
 	});
 
 	var updateNotice = function(data){

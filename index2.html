@@ -9,17 +9,33 @@
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="css/multiselect.css" />
 <link rel="stylesheet" href="css/avalon.css" />
+<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="js/multiselect.js"></script>
 <script src="js/canvasAutoResizer.js"></script>
 </head>
 <body>
+	<div id="fb-root"></div>
+	<script>(function(d, s, id) {
+	  var js, fjs = d.getElementsByTagName(s)[0];
+	  if (d.getElementById(id)) return;
+	  js = d.createElement(s); js.id = id;
+	  js.src = "//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.8&appId=1603257933316332";
+	  fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));</script>
 	<div id="loginPage" class="page">
-		可選擇顯示名稱為名字或圖片。<br>
-		<input placeholder="輸入你的暱稱" id="nameInput"></input>
-		<button id="loginButton">確認</button><br>
-		輸入圖片網址。<br>
-		<input placeholder="輸入圖片網址" id="imageInput"></input>
-		<button id="loginImageButton">確認</button><br>
+		快速登入：<br>
+		<div class="enterRoomDiv">
+			可選擇顯示名稱為名字或圖片。<br>
+			<input placeholder="輸入你的暱稱" id="nameInput"></input>
+			<button id="loginButton">確認</button><br>
+			輸入圖片網址。<br>
+			<input placeholder="輸入圖片網址" id="imageInput"></input>
+			<button id="loginImageButton">確認</button><br>
+		</div>
+		FB登入：<br>
+		<div class="enterRoomDiv">
+			<i class="fa fa-facebook-square" style="font-size:60px;color:#3b5998" id="facebookButton"></i>
+		</div>
 		<!--
 		上傳一張圖片。<br>
 		<input type="file" id="uploadImage"></input><br>
@@ -45,6 +61,13 @@
 		房間大廳 <input type="checkbox" id="roomPlayingDisplayBox">只顯示可進入的房間<br>
 		<div class="enterRoomDiv" id="roomDisplayDiv">
 		</div>
+	</div>
+	<div id="namePage" class="page">
+		<div class="enterRoomDiv" style="margin-top:100px;">
+		<p style="color:red;font-size:1.5rem;">注意！暱稱只能設定一次！</p>
+		請輸入您的暱稱：<input placeholder="最多六個字" id="setNameInput"></input>
+		<button id="nameButton">確認</button>
+		<div/>
 	</div>
 	<div id="gamePage" class="page" >
 		<header id="numberDiv" class="w3-container w3-teal"></header>
@@ -73,7 +96,7 @@
 			</div>
 		</footer>
 	</div>
-	<script src="js/client.js">
-</script>
+	<script src="js/login.js"></script>
+	<script src="js/client.js"></script>
 </body>
 </html>
