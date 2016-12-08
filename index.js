@@ -13,13 +13,6 @@
 	//app.use('/avalon',express.static(__dirname ));
 	app.use('/',express.static(__dirname ));
 
-	app.use(function (req, res, next) {
-	  res.header("Access-Control-Allow-Origin", "http://my-avalon.herokuapp.com/");
-	  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-	  res.header("Access-Control-Allow-Headers", "X-Requested-With, Content-Type");
-	  res.header("Access-Control-Allow-Credentials", "true");
-	  next();
-	});
 
 	var amountList = [0,1,2,3,4,
 		[2,3,2,3,3],
