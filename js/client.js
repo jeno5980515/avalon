@@ -1,5 +1,5 @@
 (function(){
-	var socket = io.connect('http://avalon-test.herokuapp.com/');
+	var socket = io.connect('http://my-avalon.herokuapp.com/');
 	//var socket = io.connect('http://elefanfan.com:8080/avalon');
 	//var socket = io.connect('http://elefanfan.com:8070');
 	//var socket = io.connect('http://localhost:8080');
