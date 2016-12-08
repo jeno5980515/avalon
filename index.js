@@ -8,8 +8,8 @@
 	var app = express();
 	var server = require('http').createServer(app);
 	var io = require('socket.io').listen(server);
-	//server.listen(process.env.PORTs || 8080);
-	server.listen(8070);
+	server.listen(process.env.PORTs || 8080);
+	//server.listen(8070);
 	app.use('/avalon',express.static(__dirname ));
 	//app.use('/',express.static(__dirname ));
 
