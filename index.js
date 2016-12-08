@@ -128,7 +128,7 @@
 		  				res.send({status : "success"});
 		  			}
 				});
-			}
+			});
 		};
 	});
 
