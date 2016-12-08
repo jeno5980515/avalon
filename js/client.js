@@ -1,5 +1,6 @@
 (function(){
-	var socket = io.connect('http://my-avalon.herokuapp.com/');
+	var url = "http://my-avalon.herokuapp.com" ;
+	var socket = io.connect(url);
 	//var socket = io.connect('http://elefanfan.com:8080/avalon');
 	//var socket = io.connect('http://elefanfan.com:8070');
 	//var socket = io.connect('http://localhost:8080');
@@ -35,7 +36,7 @@
 
 	var login = window.login = function(data){
 		uid = data.id ;
-		$.post("http://elefanfan.com:8070/login",{id:uid},function(data){
+		$.post(url+"/login",{id:uid},function(data){
 			if ( data.status === "exist" ){
 				var name = data.name ;
 				hide(document.getElementById("loginPage"));
@@ -58,7 +59,7 @@
 				if (stripHTML(name) === true ){
 					alert("請輸入合法字元！")
 				} else {
-					$.post("http://elefanfan.com:8070/new",{ id : uid , name : name },function(data){
+					$.post(url+"/new",{ id : uid , name : name },function(data){
 						if ( data.status === "success" ){
 							hide(document.getElementById("loginPage"));
 							show(document.getElementById("roomPage"));
