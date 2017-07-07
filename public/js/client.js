@@ -1,13 +1,13 @@
 (function(){
 	//var url = "http://my-avalon.herokuapp.com" ;
-	var url = "http://localhost:8070" ;
+	var url = "/" ;
 	//var io = require('socket.io-client');
 	//var url = "http://elefanfan.com:8070" ;
 	//var url = "http://elefanfan.com:8060" ;
 	var socket = io.connect(url);
 	//var socket = io.connect('http://elefanfan.com:8070');
 	//var socket = io.connect('http://localhost:8080');
-	var gb = null 
+	var gb = null
 	var role = null ;
 	//var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 	var godSet = false ;
@@ -25,8 +25,8 @@
 	var roleList = [] ;
 	var nowRound = 1 ;
 	var nowVote = 1 ;
-	var isJoining = false ; 
-	var isCreating = false ; 
+	var isJoining = false ;
+	var isCreating = false ;
 	var missionArray = [] ;
 	var uid ;
 	var isLogin = false ;
@@ -44,9 +44,9 @@
 		if ( data.status === "exist" ){
 			enterRoomList({
 				type : "login" ,
-				name : data.name 
+				name : data.name
 			});
-		} else if ( data.status === "new" ){	
+		} else if ( data.status === "new" ){
 			resetPage("namePage");
 		}
 	})
@@ -57,7 +57,7 @@
 				type : "login" ,
 				name : data.name
 			});
-		} else if ( data.status === "fail" ){	
+		} else if ( data.status === "fail" ){
 			alert("暱稱重複！");
 		} else if ( data.status === "exist" ){
 			alert("帳號已存在。");
@@ -67,7 +67,7 @@
 	})
 
 	document.getElementById("nameButton").addEventListener("click",function(){
-		var name = document.getElementById("setNameInput").value ; 
+		var name = document.getElementById("setNameInput").value ;
 		if ( name === "" ){
 			alert("請輸入暱稱！") ;
 		} else if (  name.length > 6 ){
@@ -78,17 +78,17 @@
 			} else {
 				socket.emit("new",{
 					id : uid ,
-					name : name 
+					name : name
 				});
 			}
 		}
 	})
 
 	var login = window.login = function(data){
-		uid = data.id ;	
+		uid = data.id ;
 		resetPage("loginingPage");
 		socket.emit("login",{
-			id : uid 
+			id : uid
 		});
 	}
 
@@ -159,7 +159,7 @@
 	var enterRoomList = function(data){
 
 		var type = data.type ;
-		var name = data.name ;	
+		var name = data.name ;
 		resetPage("roomPage");
 		document.getElementById("consoleArea").innerHTML = "" ;
 		document.getElementById("textArea").innerHTML = "" ;
@@ -170,13 +170,13 @@
 		} else if ( data.type === "leave" ){
 			socket.emit("leave",{});
 			getRoomList();
-		} 
+		}
 	}
 
 	socket.on("setUserNameResult",function(data){
 		getRoomList();
 	});
-	
+
 	var updateRoomUserStatus = function(data){
 		var create = data.create ;
 		var isStart = data.isStart ;
@@ -228,27 +228,27 @@
 			if ( isStart ){
 				if ( data.index === i ){
 					var role = imgMap[data.role+".jpg"].cloneNode(true) ;
-					role.classList.add("roleImg2") ;			
-					roleDiv.appendChild(role);	
+					role.classList.add("roleImg2") ;
+					roleDiv.appendChild(role);
 					roleDiv.classList.add("roleDiv");
 				} else {
 					if ( data.role === "派西維爾" ){
 						mArray = data.mArray ;
-						if ( mArray.indexOf(i) !== -1 ){		
+						if ( mArray.indexOf(i) !== -1 ){
 							var role = imgMap["梅林.jpg"].cloneNode(true) ;
-							role.classList.add("roleImg2") ;			
-							roleDiv.appendChild(role);	
+							role.classList.add("roleImg2") ;
+							roleDiv.appendChild(role);
 							roleDiv.classList.add("roleDiv");
 						} else {
 							var role = imgMap["unknown.jpg"].cloneNode(true) ;
-							role.classList.add("roleImg2") ;			
-							roleDiv.appendChild(role);	
+							role.classList.add("roleImg2") ;
+							roleDiv.appendChild(role);
 							roleDiv.classList.add("roleDiv");
 						}
 					} else {
 						var role = imgMap["unknown.jpg"].cloneNode(true) ;
-						role.classList.add("roleImg2") ;			
-						roleDiv.appendChild(role);	
+						role.classList.add("roleImg2") ;
+						roleDiv.appendChild(role);
 						roleDiv.classList.add("roleDiv");
 					}
 				}
@@ -282,7 +282,7 @@
 					}
 				} else if (data.role === "梅林" || (getRoleKind(data.role) === "bad" && data.role !== "奧伯倫") ){
 					bArray = data.bArray ;
-					if ( bArray.indexOf(i) !== -1 ){						
+					if ( bArray.indexOf(i) !== -1 ){
 						var campDiv = document.createElement("div") ;
 						campDiv.classList.add("campDiv") ;
 						var campImg = imgMap["bad.jpg"].cloneNode(true) ;
@@ -369,7 +369,7 @@
 		leaveButton.id = "leaveButton" ;
 		leaveButton.addEventListener("click",function(){
 			enterRoomList({
-				type : "leave" 
+				type : "leave"
 			})
 		})
 
@@ -398,7 +398,7 @@
 	}
 
 	var enterRoom = function(data){
-		var number = data.number ;	
+		var number = data.number ;
 		resetPage("gamePage");
 		updateRoomUserStatus(data);
 	}
@@ -415,7 +415,7 @@
 
 				enterRoomList({
 					type : "enter" ,
-					name : document.getElementById("nameInput").value 
+					name : document.getElementById("nameInput").value
 				});
 			}
 		}
@@ -471,12 +471,12 @@
 						var passwordText = "" ;
 						if ( document.getElementById("password"+this.getAttribute("data-number")) !== null ){
 							passwordText = document.getElementById("password"+this.getAttribute("data-number")).value ;
-						} 
+						}
 						socket.emit("join",{number:parseInt(this.getAttribute("data-number")),password:passwordText}) ;
 					}
 				}
 
-			}			
+			}
 			if ( roomList[i].isLogin ){
 				var loginSpan = document.createElement("span") ;
 				loginSpan.innerHTML = "限定登入" ;
@@ -493,9 +493,9 @@
 		var userList = data.userList ;
 		for ( var i = 0 ; i < userList.length ; i ++ ){
 			var name = userList[i].name ;
-			var number = userList[i].number ; 
+			var number = userList[i].number ;
 			var state = userList[i].state ;
-			var isLogin = userList[i].isLogin ; 
+			var isLogin = userList[i].isLogin ;
 			if ( state === "disconnect" ){
 				continue ;
 			}
@@ -515,7 +515,7 @@
 				stateSpan.innerHTML = "遊戲大廳" ;
 			} else if ( state === "room" ){
 				stateSpan.innerHTML = "房間等待" ;
-			} 
+			}
 			div.appendChild(stateSpan);
 			var numberSpan = document.createElement("span") ;
 			numberSpan.innerHTML = number || "" ;
@@ -540,8 +540,8 @@
 	})
 	function stripHTML(input) {
 		if ( input !== input.replace(/(<([^>]+)>)/ig,"") )
-			return true ; 
-		else 
+			return true ;
+		else
 			return false ;
 		/*
 	    var output = '';
@@ -580,7 +580,7 @@
 		var kind = data.kind ;
 		var index = data.index ;
 		document.querySelectorAll(".campDiv")[index].innerHTML = "" ;
-		var campImg ;		
+		var campImg ;
 		if ( kind === "good" ){
 			campImg = imgMap["good.jpg"].cloneNode(true) ;
 		} else if ( kind === "bad" ){
@@ -630,7 +630,7 @@
 			godSet = data.godSet ;
 		}
 	})
-	
+
 	socket.on("leave", function (data){
 		updateRoomUserStatus(data);
 	});
@@ -639,9 +639,9 @@
 		socket.emit('create', { password : document.getElementById("passwordCreate").value , isLogin : document.getElementById("isLimitLogin").checked });
 		socket.on('create', function (data) {
 			if ( data.status === "success" ){
-				
-			} 
-		}); 
+
+			}
+		});
 	}
 	socket.on("restart", function (data){
 		enterRoom(data);
@@ -656,7 +656,7 @@
 			document.getElementById("eventArea").innerHTML = '<div id="chooseUserArea" class="w3-container"></div>' +
 			'<div id="chooseVoteArea" class="w3-container"></div>' +
 			'<div id="missionArea" class="w3-container"></div>' +
-			'<div id="godArea" class="w3-container"></div>' + 
+			'<div id="godArea" class="w3-container"></div>' +
 			'<div id="noticeArea" class="w3-container"></div>' +
 			'<div id="assArea" class="w3-container"></div>' +
 			'<div id="restartArea" class="w3-container"></div>' ;
@@ -664,7 +664,7 @@
 			if ( create === true ){
 				socket.emit("restart",{}) ;
 			}
-		} else {	
+		} else {
 			document.getElementById("restartArea").innerHTML = "贊成未過半，重啟失敗！" ;
 		}
 	});
@@ -721,7 +721,7 @@
 					for ( var j = 0 ; j < badRoleList.length ; j ++ ){
 						if ( badRoleList[j] !== data.role[i] ){
 							var role = setRole("bad",j,roleDiv) ;
-							if ( data.role.length === 5 ){ 
+							if ( data.role.length === 5 ){
 								roleContentDiv.style.right = "0" ;
 							} else if ( data.role.length === 6 ){
 								;
@@ -736,7 +736,7 @@
 							} else if ( data.role.length === 10 ){
 								if ( i === 8 || i === 9 ){
 									roleContentDiv.style.right = "0" ;
-								} 
+								}
 							}
 							roleContentDiv.appendChild(role) ;
 						}
@@ -763,7 +763,7 @@
 			role.addEventListener("click",function(){
 				socket.emit("role",{
 					oldRole : roleDiv.getAttribute("data-role") ,
-					newRole : goodRoleList[index] 
+					newRole : goodRoleList[index]
 				})
 				goodRoleList.splice(index,1);
 			})
@@ -771,12 +771,12 @@
 			role.addEventListener("click",function(){
 				socket.emit("role",{
 					oldRole : roleDiv.getAttribute("data-role") ,
-					newRole : badRoleList[index] 
+					newRole : badRoleList[index]
 				})
 				badRoleList.splice(index,1);
 			})
 		}
-		
+
 
 		return role ;
 	}
@@ -796,14 +796,14 @@
 		text.innerHTML = index + ". " + data.user + " : " + data.text ;
 		document.getElementById("textArea").appendChild(text);
 		document.getElementById("textArea").scrollTop = document.getElementById("textArea").scrollHeight;
-	}); 
+	});
 	socket.on('messageFail', function (data) {
 		if ( data.status === 1 ){
 			alert("請輸入合法字元！") ;
 		}
-	}); 
+	});
 	document.getElementById("textInput").addEventListener("keypress",function(e){
-		if(e.keyCode === 13){ 
+		if(e.keyCode === 13){
 			document.getElementById("textButton").click();
 		}
 	})
@@ -877,7 +877,7 @@
 		var d = [] ;
 		for ( var i = 0 ; i < users.length ; i ++ ){
 			d.push({"value": i , "text" : users[i].name }) ;
-		} 
+		}
 	    var selector = window.multiselect.render({
 	        elementId: "chooseVoteArea",
 	        data: d
@@ -913,8 +913,8 @@
 			var option = document.createElement("option") ;
 			option.innerHTML = document.querySelectorAll(".nameSpan")[users[i]].innerHTML  ;
 			option.value = users[i] ;
-			select.appendChild(option) ; 
-		} 
+			select.appendChild(option) ;
+		}
 		document.getElementById("godArea").appendChild(select) ;
 		var button = document.createElement("button") ;
 		button.innerHTML = "查看" ;
@@ -946,11 +946,11 @@
 				socket.emit("mission",{choose:"n"}) ;
 				document.getElementById("missionArea").innerHTML = "" ;
 			})
-		} 
+		}
 	});
 	socket.on("voted",function (data){
 		var index = data.index ;
-		document.querySelectorAll(".vote_token2Div")[index].innerHTML = "" ; 
+		document.querySelectorAll(".vote_token2Div")[index].innerHTML = "" ;
 		var vote_token2Img = imgMap["vote_token2.jpg"].cloneNode(true) ;
 		vote_token2Img.classList.add("vote_token2Img");
 		document.querySelectorAll(".vote_token2Div")[index].appendChild(vote_token2Img) ;
@@ -979,7 +979,7 @@
 		document.getElementById("chooseVoteArea").innerHTML = "" ;
 		if ( data.nowVote === undefined ){
 			var y = document.createElement("button") ;
-			y.innerHTML = "贊成" ; 
+			y.innerHTML = "贊成" ;
 			var n = document.createElement("button") ;
 			n.innerHTML = "反對" ;
 			y.className = n.className = "w3-button w3-round" ;
@@ -997,7 +997,7 @@
 	});
 	socket.on("voteResult",function (data){
 		notificationUser("投票結果出來了！");
-		var votes = data.votes ; 
+		var votes = data.votes ;
 		for ( var i = 0 ; i < document.querySelectorAll(".vote_token2Div").length ; i ++ ){
 			document.querySelectorAll(".vote_token2Div")[i].innerHTML = "" ;
 			var vote_token2Img ;
@@ -1034,14 +1034,14 @@
 		if ( parseInt(vote) === 5){
 			document.getElementById("noticeArea").innerHTML += "<br>注意！這是最後一輪投票！" ;
 		}
-		
+
 		for ( var i = 0 ; i < document.querySelectorAll(".captionDiv").length ; i ++ ){
 			document.querySelectorAll(".captionDiv")[i].querySelector("img").style.display = "none" ;
 		}
 
 		document.querySelectorAll(".captionDiv")[data.nowCaptain.index].querySelector("img").style.display = "" ;
 		drawBoard(data);
-		
+
 	});
 	socket.on("ass",function (data){
 		notificationUser("選擇暗殺對象！");
@@ -1053,8 +1053,8 @@
 			var option = document.createElement("option") ;
 			option.innerHTML = good[i].user ;
 			option.value = good[i].index ;
-			select.appendChild(option) ; 
-		} 
+			select.appendChild(option) ;
+		}
 		document.getElementById("assArea").appendChild(select) ;
 		var button = document.createElement("button") ;
 		button.innerHTML = "刺殺" ;
@@ -1077,7 +1077,7 @@
 	})
 	socket.on("restartRequest",function (data){
 		var status = data.status ;
-		var user = data.user ; 
+		var user = data.user ;
 		if ( status === "success" ){
 			document.getElementById("restartArea").innerHTML = user + "發起重新遊戲的投票，是否要回到房間？" ;
 			var yesButton = document.createElement("button") ;
@@ -1105,7 +1105,7 @@
 
 	//document.addEventListener('visibilitychange', visibleChangeHandler, false);
 	var notification = window.Notification || window.mozNotification || window.webkitNotification;
-	if ( notification !== undefined ){ 
+	if ( notification !== undefined ){
 		notification.requestPermission(function(permission){});
 	}
 
@@ -1174,7 +1174,7 @@
 	})
 
 	var drawBoard = function(data){
-		if ( data !== undefined ){ 
+		if ( data !== undefined ){
 			userAmount = data.userAmount || 5 ;
 			nowVote = data.nowVote || 1 ;
 			missionArray = data.missionArray || [] ;
@@ -1224,7 +1224,7 @@
 			title : document.getElementById("emailTitleInput").value ,
 			content : document.getElementById("emailContentInput").value ,
 			name : document.getElementById("emailNameInput").value ,
-			email : document.getElementById("emailEmailInput").value 
+			email : document.getElementById("emailEmailInput").value
 		})
 		this.style.display = "none" ;
 	})
@@ -1233,7 +1233,7 @@
 		var status = data.status ;
 		if ( status === "success" ){
 			alert("傳送成功") ;
-			resetPage("loginPage"); 
+			resetPage("loginPage");
 		} else {
 			alert("傳送失敗");
 			document.getElementById("emailSendButton").style.display = "" ;

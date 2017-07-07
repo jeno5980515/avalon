@@ -6,15 +6,14 @@ var fs = require('fs');
 var bodyParser = require('body-parser')
 var mysql = require('mysql2');
 var path = require('path');
-var connection = mysql.createConnection({
-  /*
+var connection /* = mysql.createConnection({
     host: //,
     user: //,
     password: //,
     database: //,
     insecureAuth: //
-    */
 });
+*/
 //server.listen(process.env.PORTs || 8080);
 server.listen(process.env.PORT || 8070);
 //server.listen(8080);
@@ -1926,7 +1925,7 @@ io.sockets.on('connection', function (socket) {
     player.kick(data);
   });
   socket.on("notice",function (data){
-    const filename = "notice";
+    const filename = "public/notice";
     const encode = "utf8";
 
     fs.readFile(filename, encode, function(err, file) {
