@@ -41,11 +41,11 @@
 		var id = req.body.id ;
 		var mysql = require('mysql');
 		var connection = mysql.createConnection({
-		    host: '182.254.219.127',
-		    user: 'avalon_user',
-		    password: 'avalon_user',
-		    database: 'user',
-	    	insecureAuth: true
+		    host: //,
+		    user: //
+		    password: //
+		    database: //
+	    	insecureAuth: //
 		});
 		connection.connect();
 		checkUserExist(connection,id,function (rows){ 
@@ -86,11 +86,11 @@
 		} else {
 			var mysql = require('mysql');
 			var connection = mysql.createConnection({
-			    host: '182.254.219.127',
-			    user: 'avalon_user',
-			    password: 'avalon_user',
-			    database: 'user',
-		    	insecureAuth: true
+			    host: //
+			    user: //
+			    password: //
+			    database: //
+		    	insecureAuth: //
 			});
 			connection.connect();		
 			checkUserExist(connection,id,function(){

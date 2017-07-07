@@ -7,13 +7,16 @@
     });
 
     document.getElementById("facebookButton").addEventListener("click",function(){
+      hide(document.getElementById("loginPage"));
+      show(document.getElementById("loginingPage"));
       FB.login(function(response) {
           if (response.authResponse) {
            FB.api('/me', function(response) {
             login(response);
            });
           } else {
-           console.log('User cancelled login or did not fully authorize.');
+            show(document.getElementById("loginPage"));
+            hide(document.getElementById("loginingPage"));
           }
       });
     })
