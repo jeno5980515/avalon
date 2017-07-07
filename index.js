@@ -4,7 +4,8 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var fs = require('fs');
 var bodyParser = require('body-parser')
-var mysql = require('mysql');
+var mysql = require('mysql2');
+var path = require('path');
 var connection = mysql.createConnection({
   /*
     host: //,
@@ -17,7 +18,7 @@ var connection = mysql.createConnection({
 //server.listen(process.env.PORTs || 8080);
 server.listen(process.env.PORT || 8070);
 //server.listen(8080);
-app.use('/avalon',express.static(__dirname ));
+app.use('/avalon',express.static(path.join(__dirname, 'public')));
 //app.use(express.static(__dirname ));
 
 var amountList = [
@@ -1765,7 +1766,6 @@ var createUser = function(socket){
 io.sockets.on('connection', function (socket) {
   socket.on("login",function (data){
     var id = data.id ;
-    connection.connect();
     checkUserExist(connection,id,function (rows){
       socket.emit("login",{
         status : "exist" ,
@@ -1776,12 +1776,10 @@ io.sockets.on('connection', function (socket) {
         isLogin : true ,
         name : rows[0].name
       })
-      connection.end();
     },function(){
       socket.emit("login",{
         status : "new"
       })
-      connection.end();
     });
   })
   socket.on("new",function (data){
@@ -1792,12 +1790,10 @@ io.sockets.on('connection', function (socket) {
         status : "invalid"
       });
     } else {
-      connection.connect();
       checkUserExist(connection,id,function(){
         socket.emit("new",{
           status : "exist"
         });
-        connection.end();
       },function(){
         var queryString = 'SELECT * FROM `avalon_user` WHERE `name` = "' + name + '"' ;
         connection.query(queryString, function(err, rows, fields) {
@@ -1806,7 +1802,6 @@ io.sockets.on('connection', function (socket) {
             socket.emit("new",{
               status : "fail"
             });
-            connection.end();
           } else {
             var data = {
               id: id,
@@ -1817,7 +1812,6 @@ io.sockets.on('connection', function (socket) {
                 console.log('寫入資料失敗！');
                 throw error;
               }
-              connection.end();
             });
             socket.emit("new",{
               status : "success" ,
