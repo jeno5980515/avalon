@@ -7,6 +7,7 @@
     "body-parser": "^1.15.2",
     "express": "^4.13.3",
     "http-proxy": "^1.15.2",
+    "mysql": "^2.13.0",
     "socket.io": "^1.4.4"
   },
   "devDependencies": {
@@ -15,6 +16,7 @@
     "mocha-jsdom": "^1.1.0"
   },
   "scripts": {
+    "start": "node index.js",
     "test": "mocha"
   },
   "author": "jeno5980515",
