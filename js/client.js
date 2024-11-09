@@ -124,54 +124,105 @@
 	var getRoomList = function(){
 		socket.emit("getRoomList",{});
 	}
-	socket.on("getRoomList",function (data){
-		document.getElementById("roomDisplayDiv").innerHTML = "" ;
-		var roomList = data.roomList ;
-		for ( var i = 0 ; i < roomList.length ; i ++ ){
-			if ( document.getElementById("roomPlayingDisplayBox").checked === true ){
-				if ( roomList[i].start )
-					continue ;
+	socket.on("getRoomList", function(data) {
+		const roomDisplayDiv = document.getElementById("roomDisplayDiv");
+		roomDisplayDiv.innerHTML = "";
+		const roomList = data.roomList;
+		
+		roomList.forEach(room => {
+			if (document.getElementById("roomPlayingDisplayBox").checked && room.start) {
+				return;
 			}
-			var div = document.createElement("div") ;
-			div.style.padding = "5px" ;
-			div.style.border = "1px solid black" ;
-			div.style.borderRadius = "5px" ;
-			var number = document.createElement("span") ;
-			var name = document.createElement("div") ;
-			name.innerHTML = "室長：" + roomList[i].creater ;
-			var people = document.createElement("div") ;
-			people.innerHTML = "人數："+roomList[i].people + "/10";
-			number.innerHTML = "房號："+roomList[i].number ;
-			div.appendChild(name);
-			div.appendChild(number);
-			if ( !roomList[i].start ){
-				var button = document.createElement("button") ;
-				button.innerHTML = "進入" ;
-				button.style.float = "right" ;
-				div.appendChild(button);
-				var password = document.createElement("input") ;
-				password.id = "password" + roomList[i].number ;
-				if ( roomList[i].password === true  ){
-					password.style.float = "right" ;
-					password.placeholder = "請輸入密碼" ;
-					div.appendChild(password);
-				}
-				button.setAttribute("data-number",roomList[i].number);
-				button.onclick = function(){
-					if ( isJoining === false ){
-						isJoining = true ;
-						var passwordText = "" ;
-						if ( document.getElementById("password"+this.getAttribute("data-number")) !== null ){
-							passwordText = document.getElementById("password"+this.getAttribute("data-number")).value ;
-						} 
-						socket.emit("join",{user:userName,number:parseInt(this.getAttribute("data-number")),password:passwordText}) ;
+
+			const roomItem = document.createElement("div");
+			roomItem.className = "room-item" + (room.start ? " room-in-progress" : "");
+
+			// Add click handler for the entire room
+			if (!room.start) {
+				roomItem.onclick = function(e) {
+					// Don't trigger if clicking on password input
+					if (e.target.classList.contains('room-password')) {
+						return;
 					}
+					
+					if (!isJoining) {
+						isJoining = true;
+						const passwordInput = document.getElementById("password" + room.number);
+						const passwordText = passwordInput ? passwordInput.value : "";
+						socket.emit("join", {
+							user: userName,
+							number: room.number,
+							password: passwordText
+						});
+					}
+				};
+			}
+
+			const roomInfo = document.createElement("div");
+			roomInfo.className = "room-info";
+			
+			const statusIcon = room.start ? 
+				'<i class="fa fa-play-circle status-icon playing"></i>' : 
+				'<i class="fa fa-pause-circle status-icon waiting"></i>';
+
+			roomInfo.innerHTML = `
+				<div class="room-status">${statusIcon}</div>
+				<div class="room-details">
+					<div class="room-leader">
+						<i class="fa fa-user"></i>
+						<span>室長：${room.creater}</span>
+					</div>
+					<div class="room-number">
+						<i class="fa fa-hashtag"></i>
+						<span>房號：${room.number}</span>
+					</div>
+					<div class="room-players">
+						<i class="fa fa-users"></i>
+						<span>人數：${room.people}/10</span>
+					</div>
+				</div>
+			`;
+
+			roomItem.appendChild(roomInfo);
+
+			if (!room.start) {
+				const roomActions = document.createElement("div");
+				roomActions.className = "room-actions";
+
+				if (room.password) {
+					const passwordInput = document.createElement("input");
+					passwordInput.type = "password";
+					passwordInput.id = "password" + room.number;
+					passwordInput.placeholder = "請輸入密碼";
+					passwordInput.className = "room-password";
+					passwordInput.autocomplete = "off";
+					
+					passwordInput.addEventListener('click', (e) => {
+						e.stopPropagation();
+					});
+					
+					passwordInput.addEventListener('focus', (e) => {
+						e.currentTarget.parentElement.parentElement.style.transform = 'none';
+					});
+					
+					passwordInput.addEventListener('blur', (e) => {
+						e.currentTarget.parentElement.parentElement.style.transform = '';
+					});
+					
+					roomActions.appendChild(passwordInput);
 				}
 
+				const joinButton = document.createElement("button");
+				joinButton.innerHTML = '<i class="fa fa-sign-in"></i> 進入';
+				joinButton.className = "btn btn-join";
+				joinButton.setAttribute("data-number", room.number);
+				
+				roomActions.appendChild(joinButton);
+				roomItem.appendChild(roomActions);
 			}
-			div.appendChild(people);
-			document.getElementById("roomDisplayDiv").appendChild(div);
-		}
+
+			roomDisplayDiv.appendChild(roomItem);
+		});
 	})
 	function stripHTML(input) {
 		if ( input !== input.replace(/(<([^>]+)>)/ig,"") )
@@ -994,7 +1045,7 @@
 		} 
 		document.getElementById("assArea").appendChild(select) ;
 		var button = document.createElement("button") ;
-		button.innerHTML = "刺殺" ;
+		button.innerHTML = "殺";
 		document.getElementById("assArea").appendChild(button);
 
 		button.addEventListener("click",function(){

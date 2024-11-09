@@ -55,19 +55,78 @@
 		</div>
 	</div>	
 	<div id="roomPage" class="page">
-		創建房間
-		<div class="enterRoomDiv">
-			密碼<input placeholder="若無則留空" id="passwordCreate"></input>
-			<button id="createButton">創建房間</button>
-		</div>
-		加入房間
-		<div class="enterRoomDiv">
-			房號<input placeholder="輸入房號" id="roomInput"></input>
-			密碼<input placeholder="若無則留空" id="passwordJoin"></input>
-			<button id="joinButton">進入房間</button>
-		</div>
-		房間大廳 <input type="checkbox" id="roomPlayingDisplayBox">只顯示可進入的房間<br>
-		<div class="enterRoomDiv" id="roomDisplayDiv">
+		<div class="room-layout">
+			<div class="room-actions-container">
+				<!-- Create Room Section -->
+				<div class="room-section">
+					<div class="section-header">
+						<i class="fa fa-plus-circle"></i>
+						<h2>創建房間</h2>
+					</div>
+					<div class="room-form">
+						<div class="input-group">
+							<label for="passwordCreate">
+								<i class="fa fa-lock"></i>
+								密碼
+							</label>
+							<input id="passwordCreate" placeholder="若無則留空" />
+						</div>
+						<button id="createButton" class="btn btn-create">
+							<i class="fa fa-plus"></i>
+							創建房間
+						</button>
+					</div>
+				</div>
+
+				<!-- Join Room Section -->
+				<div class="room-section">
+					<div class="section-header">
+						<i class="fa fa-sign-in"></i>
+						<h2>加入房間</h2>
+					</div>
+					<div class="room-form">
+						<div class="input-group">
+							<label for="roomInput">
+								<i class="fa fa-home"></i>
+								房號
+							</label>
+							<input id="roomInput" placeholder="輸入房號" />
+						</div>
+						<div class="input-group">
+							<label for="passwordJoin">
+								<i class="fa fa-lock"></i>
+								密碼
+							</label>
+							<input id="passwordJoin" placeholder="若無則留空" type="password" />
+						</div>
+						<button id="joinButton" class="btn btn-join">
+							<i class="fa fa-sign-in"></i>
+							進入房間
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="room-list-container">
+				<div class="room-section room-list-section">
+					<div class="room-header">
+						<div class="section-header">
+							<i class="fa fa-list"></i>
+							<h2>房間大廳</h2>
+						</div>
+						<div class="room-filter">
+							<label class="checkbox-container">
+								<input type="checkbox" id="roomPlayingDisplayBox">
+								<span class="checkbox-text">
+									<i class="fa fa-filter"></i>
+									只顯示可進入的房間
+								</span>
+							</label>
+						</div>
+					</div>
+					<div id="roomDisplayDiv" class="room-list"></div>
+				</div>
+			</div>
 		</div>
 	</div>
 	<div id="gamePage" class="page" >
