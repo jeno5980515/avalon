@@ -343,11 +343,7 @@
 			hide(document.getElementById("roomPage"));
 			show(document.getElementById("gamePage"));
 			var user = data.user ;
-			var d = document.createElement("div") ;
-			d.innerHTML = user +" 加入房間" ;
-			d.className = "console-message";
 			notificationUser(user +" 加入房間");
-			document.getElementById("consoleArea").appendChild(d) ;
 
 			if ( data.isStart === false || document.getElementById("playerDiv").innerHTML === "" ){
 				document.getElementById("playerDiv").innerHTML = "" ;
@@ -372,11 +368,6 @@
 		var user = data.user;
 		userAmount = users.length;
 		notificationUser(user + "離開房間了！");
-		
-		var d = document.createElement("div");
-		d.innerHTML = user + " 離開房間";
-		d.className = "console-message";
-		document.getElementById("consoleArea").appendChild(d);
 		
 		document.getElementById("playerDiv").innerHTML = "";
 		for (var i = 0; i < users.length; i++) {
@@ -856,7 +847,7 @@
 				player.appendChild(tokenDiv);
 				document.getElementById("playerDiv").appendChild(player);
 			}
-			addConsole("遊戲開始了！");
+			addConsoleMessage("遊戲開始了！");
 			hide(document.getElementById("startButton"));
 			create = false ;
 			setRoleList(data);
@@ -900,7 +891,7 @@
 		if ( data.notify === true ){
 			notificationUser(data.console);
 		}
-		addConsole(data.console);
+		addConsoleMessage(data.console);
 	});
 	socket.on("god",function (data){
 		notificationUser("輪到你使用女神！");
@@ -1325,5 +1316,61 @@
 	// Handle system messages
 	socket.on('system message', function(message) {
 		addChatMessage(null, message, true);
+	});
+
+	function addConsoleMessage(message, type = 'info') {
+		const consoleArea = document.getElementById('consoleArea');
+		const messageDiv = document.createElement('div');
+		messageDiv.classList.add('console-message', type);
+		
+		const timestamp = new Date().toLocaleTimeString();
+		
+		messageDiv.innerHTML = `
+			<span class="timestamp">[${timestamp}]</span>
+			<span class="content">${message}</span>
+		`;
+		
+		consoleArea.appendChild(messageDiv);
+		consoleArea.scrollTop = consoleArea.scrollHeight;
+		
+		// Optional: Limit number of messages to prevent excessive memory usage
+		while (consoleArea.children.length > 100) {
+			consoleArea.removeChild(consoleArea.firstChild);
+		}
+	}
+
+	// Update existing notification functions to use the new console
+	function notificationUser(message) {
+		addConsoleMessage(message, 'info');
+	}
+
+	function notificationSuccess(message) {
+		addConsoleMessage(message, 'success');
+	}
+
+	function notificationWarning(message) {
+		addConsoleMessage(message, 'warning');
+	}
+
+	function notificationError(message) {
+		addConsoleMessage(message, 'error');
+	}
+
+	// Example usage in existing code:
+	socket.on('gameEvent', function(data) {
+		switch(data.type) {
+			case 'start':
+				addConsoleMessage(`遊戲開始！`, 'success');
+				break;
+			case 'vote':
+				addConsoleMessage(`${data.player} 進行了投票`, 'info');
+				break;
+			case 'mission':
+				addConsoleMessage(`任務${data.missionNumber}開始`, 'warning');
+				break;
+			case 'error':
+				addConsoleMessage(data.message, 'error');
+				break;
+		}
 	});
 })();
