@@ -696,15 +696,23 @@ canvas{
 }
 
 .w3-dropdown-content {
+    cursor: auto;
+    color: #000;
+    background-color: #fff;
     display: none;
     position: absolute !important;
-    background-color: #fff;
-    min-width: 160px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    z-index: 9999 !important;
+    min-width: 240px;
+    white-space: nowrap;
+    margin: 0;
     padding: 8px;
-    left: 0;
-    top: 100%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.w3-bar-item {
+    display: inline-block;
+    padding: 4px;
+    vertical-align: middle;
 }
 
 /* Force display on hover */
@@ -734,13 +742,6 @@ canvas{
     transform: scale(1.1);
 }
 
-/* Ensure proper stacking context */
-.roleDiv, 
-.w3-dropdown-hover, 
-.w3-dropdown-content {
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-}
 
 .game-header {
     padding: 1rem;
@@ -1798,4 +1799,170 @@ button {
 /* Add padding to the page content to account for fixed header */
 .page {
     padding-top: 64px;  /* Adjust this value based on your header height */
+}
+
+/* Game layout */
+.game-content {
+    padding: 2rem;
+    max-width: 1400px;
+}
+
+.game-layout {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+/* Role section */
+.role-section {
+    flex: 0 0 300px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 80px; /* Account for header + some spacing */
+}
+
+/* Board section */
+.board-section {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .game-layout {
+        flex-direction: column;
+    }
+
+    .role-section {
+        flex: none;
+        width: 100%;
+        position: relative;
+        top: 0;
+    }
+
+    .board-section {
+        width: 100%;
+    }
+}
+
+/* Update existing board image styles */
+.board-section img,
+.board-section canvas {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Role list styling */
+.role-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.role-card {
+    position: relative;
+    border-radius: 8px;
+    padding: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.role-good {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+}
+
+.role-evil {
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+}
+
+.role-wrapper {
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+}
+
+.role-image {
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+}
+
+/* Dropdown styling */
+.role-dropdown {
+    position: relative;
+}
+
+.role-dropdown:hover .role-dropdown-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.role-dropdown-content {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 1000;
+    min-width: 150px;
+    margin-top: 0.5rem;
+}
+
+.dropdown-item {
+    padding: 0.8rem 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f6fa;
+}
+
+.dropdown-item:first-child {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.dropdown-item:last-child {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+/* Hover effects */
+.role-wrapper:hover .role-image {
+    transform: scale(1.05);
+}
+
+/* Optional: Add arrow indicator for dropdowns */
+.role-dropdown::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid white;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.role-dropdown:hover::after {
+    opacity: 1;
 }

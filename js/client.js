@@ -565,7 +565,9 @@
 					var roleContentDiv = document.createElement("div");
 					roleContentDiv.className = "w3-dropdown-content w3-bar-block w3-border";
 					roleContentDiv.style.backgroundColor = "#fff";
-					roleContentDiv.style.zIndex = "1000";
+					roleContentDiv.style.zIndex = "10000";
+					roleContentDiv.style.whiteSpace = "nowrap";
+					roleContentDiv.style.textAlign = "center";
 
 					availableOptions.forEach(role => {
 						var roleElement = setRole(getRoleKind(data.role[i]), 
@@ -575,6 +577,7 @@
 									   roleDiv);
 						var container = document.createElement("div");
 						container.className = "w3-bar-item";
+						container.style.display = "inline-block";
 						container.appendChild(roleElement);
 						roleContentDiv.appendChild(container);
 					});
