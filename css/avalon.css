@@ -75,10 +75,7 @@ canvas{
 }
 
 .roleDiv {
-	margin-left: 3px;
-	margin-top: 3px;
-	margin-bottom: 3px;
-	width :35%;
+	position: relative !important;
 	display: inline-block;
 }
 
@@ -685,4 +682,62 @@ canvas{
     position: relative;
     z-index: 100;
     pointer-events: auto;
+}
+
+/* Role dropdown styling */
+.roleDiv {
+    position: relative;
+    display: inline-block;
+}
+
+.w3-dropdown-hover {
+    position: relative !important;
+    display: inline-block !important;
+}
+
+.w3-dropdown-content {
+    display: none;
+    position: absolute !important;
+    background-color: #fff;
+    min-width: 160px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 9999 !important;
+    padding: 8px;
+    left: 0;
+    top: 100%;
+}
+
+/* Force display on hover */
+.w3-dropdown-hover:hover .w3-dropdown-content {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Keep dropdown visible while hovering over it */
+.w3-dropdown-content:hover {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.roleContentImg {
+    max-width: 80px;
+    width: 15vw;
+    display: inline-block !important;
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin: 4px;
+}
+
+.roleContentImg:hover {
+    transform: scale(1.1);
+}
+
+/* Ensure proper stacking context */
+.roleDiv, 
+.w3-dropdown-hover, 
+.w3-dropdown-content {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }

@@ -233,13 +233,10 @@
 	}
 
 
-	document.getElementById("createButton").addEventListener("click", function(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		if (!isCreating) {
+	document.getElementById("createButton").addEventListener("click", function() {
+		if (isCreating === false) {
 			isCreating = true;
-			const password = document.getElementById("passwordCreate").value;
-			socket.emit("create", { user: userName, password: password });
+			createRoom();
 		}
 	});
 
@@ -468,7 +465,7 @@
 		show(document.getElementById("gamePage"));
 	})
 	socket.on("gameoverMessage" ,function (data){
-		notificationUser( "遊戲結束！");
+		notificationUser( "遊戲結束");
 		document.getElementById("noticeArea").innerHTML = data ;
 	});
 	socket.on("restartResult" ,function (data){
@@ -530,47 +527,37 @@
 			var img = imgMap[data.role[i]+".jpg"].cloneNode(true) ;
 			img.className = "roleImg" ;
 			roleDiv.appendChild(img);
-			if ( create === true ){
 
-				roleDiv.classList.add("w3-dropdown-hover");
-				var roleContentDiv = document.createElement("div") ;
-				roleContentDiv.style.maxWidth = "240px" ;
-				roleContentDiv.style.width = "45vw" ;
-				roleContentDiv.style.backgroundColor = "transparent" ;
-				roleContentDiv.classList.add("w3-dropdown-content");
-				if ( getRoleKind(data.role[i]) === "good" && data.role[i] !== "梅林" ){
-					for ( var j = 0 ; j < goodRoleList.length ; j ++ ){
-						if ( goodRoleList[j] !==  data.role[i]) {
-							var role = setRole("good",j,roleDiv) ;
-							roleContentDiv.appendChild(role) ;
-						}
-					}
-				} else if ( getRoleKind(data.role[i]) === "bad" && data.role[i] !== "刺客" ){
-					for ( var j = 0 ; j < badRoleList.length ; j ++ ){
-						if ( badRoleList[j] !== data.role[i] ){
-							var role = setRole("bad",j,roleDiv) ;
-							if ( data.role.length === 5 ){ 
-								roleContentDiv.style.right = "0" ;
-							} else if ( data.role.length === 6 ){
-								;
-							} else if ( data.role.length === 7 ){
-								;
-							} else if ( data.role.length === 8 ){
-								;
-							} else if ( data.role.length === 9 ){
-								if ( i === 8 ){
-									roleContentDiv.style.right = "0" ;
-								}
-							} else if ( data.role.length === 10 ){
-								if ( i === 8 || i === 9 ){
-									roleContentDiv.style.right = "0" ;
-								} 
-							}
-							roleContentDiv.appendChild(role) ;
-						}
-					}
+			if ( create === true ){
+				let availableOptions = [];
+				
+				if (getRoleKind(data.role[i]) === "good" && data.role[i] !== "梅林") {
+					availableOptions = goodRoleList.filter(role => role !== data.role[i]);
+				} else if (getRoleKind(data.role[i]) === "bad" && data.role[i] !== "刺客") {
+					availableOptions = badRoleList.filter(role => role !== data.role[i]);
 				}
-				roleDiv.appendChild(roleContentDiv);
+
+				if (availableOptions.length > 0) {
+					roleDiv.className = "w3-dropdown-hover roleDiv";
+					var roleContentDiv = document.createElement("div");
+					roleContentDiv.className = "w3-dropdown-content w3-bar-block w3-border";
+					roleContentDiv.style.backgroundColor = "#fff";
+					roleContentDiv.style.zIndex = "1000";
+
+					availableOptions.forEach(role => {
+						var roleElement = setRole(getRoleKind(data.role[i]), 
+									   getRoleKind(data.role[i]) === "good" ? 
+									   goodRoleList.indexOf(role) : 
+									   badRoleList.indexOf(role), 
+									   roleDiv);
+						var container = document.createElement("div");
+						container.className = "w3-bar-item";
+						container.appendChild(roleElement);
+						roleContentDiv.appendChild(container);
+					});
+
+					roleDiv.appendChild(roleContentDiv);
+				}
 			}
 			document.getElementById("roleDiv").appendChild(roleDiv);
 		}
