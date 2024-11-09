@@ -65,7 +65,7 @@
 		if ( localStorage.socketId !== undefined ){
 			socket.emit("recover",{id:localStorage.socketId });
 		} else {
-			alert("沒有紀錄！") ;
+			alert("有紀錄！") ;
 		}
 	})
 	/*
@@ -206,7 +206,7 @@
 
 				const joinButton = document.createElement("button");
 				joinButton.innerHTML = '<i class="fa fa-sign-in"></i> 進入';
-				joinButton.className = "btn btn-join";
+				joinButton.className = "header-btn btn-join";
 				joinButton.onclick = function(e) {
 					e.stopPropagation(); // Prevent room click
 					handleRoomJoin(room.number);
@@ -302,7 +302,7 @@
 			document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
 			var leaveButton = document.createElement("button") ;
 			leaveButton.innerHTML = "離開房間" ;
-			leaveButton.className = "w3-btn w3-round w3-red" ;
+			leaveButton.className = "header-btn btn-danger" ;
 			leaveButton.id = "leaveButton" ;
 			leaveButton.addEventListener("click",function(){
 				socket.emit("leave",{user:userName,number:roomNumber});
@@ -316,7 +316,7 @@
 			if ( create === true ){
 				var button = document.createElement("button") ;
 				button.innerHTML = "開始" ;
-				button.className = "w3-btn w3-round w3-indigo" ;
+				button.className = "header-btn btn-success" ;
 				button.id = "startButton" ;
 				button.addEventListener("click",function(){
 					socket.emit("start",{user:userName,number:roomNumber});
@@ -324,7 +324,7 @@
 				document.getElementById("numberDiv").appendChild(button);
 				var god = document.createElement("button") ;
 				god.innerHTML = "湖中女神" ;
-				god.className = "w3-btn w3-round w3-indigo" ;
+				god.className = "header-btn btn-primary" ;
 				god.id = "godButton" ;
 				god.addEventListener("click",function(){
 					if ( users.length < 7 ){
@@ -345,6 +345,7 @@
 			var user = data.user ;
 			var d = document.createElement("div") ;
 			d.innerHTML = user +" 加入房間" ;
+			d.className = "console-message";
 			notificationUser(user +" 加入房間");
 			document.getElementById("consoleArea").appendChild(d) ;
 
@@ -352,12 +353,9 @@
 				document.getElementById("playerDiv").innerHTML = "" ;
 				for ( var i = 0 ; i < users.length ; i ++ ){
 					var u = document.createElement("div") ;
-					u.classList.add("player");
-					u.classList.add("w3-card-4");
+					u.className = "player-card";
 					var name = document.createElement("div") ;
-					name.classList.add("name") ;
-					name.classList.add("w3-border");
-					name.classList.add("w3-black");
+					name.className = "player-name";
 					name.innerHTML = users[i] ;
 					u.appendChild(name) ;
 					document.getElementById("playerDiv").appendChild(u) ;
@@ -369,26 +367,28 @@
 		isCreating = false ;
 	});
 
-	socket.on("leave", function (data){
-		var users = data.users ;
-		var user = data.user ;
-		userAmount = users.length ;
+	socket.on("leave", function(data) {
+		var users = data.users;
+		var user = data.user;
+		userAmount = users.length;
 		notificationUser(user + "離開房間了！");
-		var d = document.createElement("div") ;
-		d.innerHTML = user +" 離開房間" ;
-		document.getElementById("consoleArea").appendChild(d) ;
-		document.getElementById("playerDiv").innerHTML = "" ;
-		for ( var i = 0 ; i < users.length ; i ++ ){
-			var u = document.createElement("div") ;
-			u.classList.add("player");
-			u.classList.add("w3-card-4");
-			var name = document.createElement("div") ;
-			name.classList.add("name") ;
-			name.classList.add("w3-border");
-			name.classList.add("w3-black");
-			name.innerHTML = users[i] ;
-			u.appendChild(name) ;
-			document.getElementById("playerDiv").appendChild(u) ;
+		
+		var d = document.createElement("div");
+		d.innerHTML = user + " 離開房間";
+		d.className = "console-message";
+		document.getElementById("consoleArea").appendChild(d);
+		
+		document.getElementById("playerDiv").innerHTML = "";
+		for (var i = 0; i < users.length; i++) {
+			var u = document.createElement("div");
+			u.className = "player-card";
+			
+			var name = document.createElement("div");
+			name.className = "player-name";
+			name.innerHTML = users[i];
+			u.appendChild(name);
+			
+			document.getElementById("playerDiv").appendChild(u);
 		}
 		drawBoard();
 	});
@@ -416,54 +416,77 @@
 		}); 
 	}
 	socket.on("restart", function (data){
-		document.getElementById("restartArea").innerHTML = "" ;
-		if ( creater === true ){
-			create = true ;
+		document.getElementById("restartArea").innerHTML = "";
+		if (creater === true) {
+			create = true;
 		}
-		var users = data.users ;
-		var number = data.number ;
-		roomNumber = number ;
-		socket.emit("resetRole",{number:number}) ;
-		document.getElementById("numberDiv").innerHTML = "房號 ： " + roomNumber ;
-		var leaveButton = document.createElement("button") ;
-		leaveButton.innerHTML = "離開房間" ;
-		leaveButton.className = "w3-btn w3-round w3-red" ;
-		leaveButton.id = "leaveButton" ;
-		leaveButton.addEventListener("click",function(){
-			socket.emit("leave",{user:userName,number:roomNumber});
-			show(document.getElementById("roomPage"));
-			hide(document.getElementById("gamePage"));
-			document.getElementById("consoleArea").innerHTML = "" ;
-			document.getElementById("textArea").innerHTML = "" ;
-			localStorage.socketId = "" ;
-		})
-		document.getElementById("numberDiv").appendChild(leaveButton);
-		if ( create === true ){
-			var button = document.createElement("button") ;
-			button.innerHTML = "開始" ;
-			button.className = "w3-btn w3-round w3-indigo" ;
-			button.id = "startButton" ;
-			button.addEventListener("click",function(){
-				socket.emit("start",{user:userName,number:roomNumber});
-			})
-			document.getElementById("numberDiv").appendChild(button);
-			var god = document.createElement("button") ;
-			god.innerHTML = "湖中女神" ;
-			god.className = "w3-btn w3-round w3-indigo" ;
-			god.id = "godButton" ;
-			god.addEventListener("click",function(){
-				if ( godSet === true ){
-					godSet = false ;
-				} else {
-					godSet = true ;
+		
+		var users = data.users;
+		var number = data.number;
+		roomNumber = number;
+		socket.emit("resetRole", {number: number});
+		
+		// Update room number with new format
+		updateRoomNumber(roomNumber);
+
+		const headerRight = document.querySelector('.header-right');
+		headerRight.innerHTML = ''; // Clear existing buttons
+		
+		if (create === true) {
+			// Start button
+			const startButton = createHeaderButton(
+				"startButton",
+				"fa-play",
+				"開始",
+				"btn-indigo",
+				"開始遊戲",
+				function() {
+					socket.emit("start", {user: userName, number: roomNumber});
 				}
-				socket.emit("godSet",{godSet:godSet,number:roomNumber});
-			})
-			document.getElementById("numberDiv").appendChild(god);
+			);
+			headerRight.appendChild(startButton);
+
+			// God mode button
+			const godButton = createHeaderButton(
+				"godButton",
+				"fa-crown",
+				"湖中女神",
+				"btn-indigo",
+				"切換湖中女神模式",
+				function() {
+					if (users.length < 7) {
+						alert("需要七人以上才能使用湖中女神。");
+					} else {
+						godSet = !godSet;
+						godButton.classList.toggle('active');
+						socket.emit("godSet", {godSet: godSet, number: roomNumber});
+					}
+				}
+			);
+			headerRight.appendChild(godButton);
 		}
+
+		// Leave button
+		const leaveButton = createHeaderButton(
+			"leaveButton",
+			"fa-sign-out-alt",
+			"離開房間",
+			"btn-red",
+			"離開當前房間",
+			function() {
+				socket.emit("leave", {user: userName, number: roomNumber});
+				show(document.getElementById("roomPage"));
+				hide(document.getElementById("gamePage"));
+				document.getElementById("consoleArea").innerHTML = "";
+				document.getElementById("textArea").innerHTML = "";
+				localStorage.socketId = "";
+			}
+		);
+		headerRight.appendChild(leaveButton);
+
 		hide(document.getElementById("roomPage"));
 		show(document.getElementById("gamePage"));
-	})
+	});
 	socket.on("gameoverMessage" ,function (data){
 		notificationUser( "遊戲結束");
 		document.getElementById("noticeArea").innerHTML = data ;
@@ -658,7 +681,7 @@
 		roleGuessContentDiv.appendChild(roleGuessImg5);
 		var roleGuessImg6 = imgMap["莫甘娜.jpg"].cloneNode(true) ;
 		roleGuessContentDiv.appendChild(roleGuessImg6);
-		var roleGuessImg7 = imgMap["莫德雷德.jpg"].cloneNode(true) ;
+		var roleGuessImg7 = imgMap["莫德雷.jpg"].cloneNode(true) ;
 		roleGuessContentDiv.appendChild(roleGuessImg7);
 		var roleGuessImg8 = imgMap["奧伯倫.jpg"].cloneNode(true) ;
 		roleGuessContentDiv.appendChild(roleGuessImg8);
@@ -844,7 +867,7 @@
 	    });
 
 		var button = document.createElement("button") ;
-		button.className = "w3-btn w3-round" ;
+		button.className = "header-btn btn-success" ;
 		button.innerHTML = "送出" ;
 	    button.addEventListener("click", function() {
 	    	if ( selector.getSelectedIndexes().length !== amount ) {
@@ -878,7 +901,7 @@
 		document.getElementById("godArea").appendChild(select) ;
 		var button = document.createElement("button") ;
 		button.innerHTML = "查看" ;
-		button.className = "w3-button w3-round" ;
+		button.className = "header-btn btn-primary" ;
 		document.getElementById("godArea").appendChild(button);
 
 		button.addEventListener("click",function(){
@@ -891,7 +914,7 @@
 		document.getElementById("missionArea").innerHTML = "" ;
 		var y = document.createElement("button") ;
 		y.innerHTML = "成功" ;
-		y.className = "w3-button w3-round" ;
+		y.className = "header-btn btn-primary" ;
 		document.getElementById("missionArea").appendChild(y) ;
 		y.addEventListener("click",function(){
 			socket.emit("mission",{choose:"y",number:roomNumber,user:userName}) ;
@@ -900,7 +923,7 @@
 		if ( gb === "b" ){
 			var n = document.createElement("button") ;
 			n.innerHTML = "失敗" ;
-			n.className = "w3-button w3-round" ;
+			n.className = "header-btn btn-danger" ;
 			document.getElementById("missionArea").appendChild(n) ;
 			n.addEventListener("click",function(){
 				socket.emit("mission",{choose:"n",number:roomNumber,user:userName}) ;
@@ -955,7 +978,7 @@
 			y.innerHTML = "贊成" ; 
 			var n = document.createElement("button") ;
 			n.innerHTML = "反對" ;
-			y.className = n.className = "w3-button w3-round" ;
+			y.className = n.className = "header-btn btn-success" ;
 			document.getElementById("chooseVoteArea").appendChild(y);
 			document.getElementById("chooseVoteArea").appendChild(n);
 			y.addEventListener("click",function(){
@@ -1018,7 +1041,7 @@
 			document.getElementById("noticeArea").innerHTML = "" ;
 		}
 		if ( parseInt(vote) === 5){
-			document.getElementById("noticeArea").innerHTML += "<br>注意！這是最後一輪投票！" ;
+			document.getElementById("noticeArea").innerHTML += "<br>注意！這是最後一輪投票" ;
 		}
 		
 		for ( var i = 0 ; i < document.querySelectorAll(".captionDiv").length ; i ++ ){
@@ -1044,6 +1067,7 @@
 		document.getElementById("assArea").appendChild(select) ;
 		var button = document.createElement("button") ;
 		button.innerHTML = "殺";
+		button.className = "header-btn btn-danger" ;
 		document.getElementById("assArea").appendChild(button);
 
 		button.addEventListener("click",function(){
@@ -1200,5 +1224,37 @@
 				password: passwordText
 			});
 		}
+	}
+
+	// Update room number display function
+	function updateRoomNumber(number) {
+		const numberDiv = document.getElementById('numberDiv');
+		numberDiv.className = 'room-info';
+		numberDiv.innerHTML = `
+			<div class="room-status-wrapper">
+				<div class="room-basic-info">
+					<span class="room-label">房間</span>
+					<span class="room-id">#${String(number).padStart(4, '0')}</span>
+				</div>
+				<div class="room-status">
+					<span class="status-dot"></span>
+					<span class="status-text">進行中</span>
+				</div>
+			</div>
+		`;
+	}
+
+	// Helper function to create standardized buttons
+	function createHeaderButton(id, icon, text, className, tooltip, clickHandler) {
+		const button = document.createElement("button");
+		button.innerHTML = `<i class="fa ${icon}"></i><span>${text}</span>`;
+		button.className = `header-btn ${className} no-outline`;
+		button.id = id;
+		button.setAttribute('tabindex', '-1');
+		if (tooltip) {
+			button.setAttribute('data-tooltip', tooltip);
+		}
+		button.addEventListener("click", clickHandler);
+		return button;
 	}
 })();

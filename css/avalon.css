@@ -741,3 +741,1061 @@ canvas{
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
 }
+
+.game-header {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.room-number {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    position: relative;
+    padding-right: 1.5rem;
+}
+
+.room-number::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    height: 20px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%);
+}
+
+.room-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.room-id {
+    font-size: 1.2rem;
+    font-weight: 600;
+    font-family: 'Monaco', 'Consolas', monospace;
+    color: #4FC3F7;
+    text-shadow: 0 0 10px rgba(79, 195, 247, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.1rem 0.5rem;
+    border-radius: 3px;
+    min-width: 60px;
+    text-align: center;
+}
+
+.btn-restart {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+}
+
+.btn-restart:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+.btn-restart i {
+    font-size: 0.9em;
+}
+
+.restart-options {
+    padding: 0.5rem 0;
+}
+
+.game-header-wrapper {
+    background: linear-gradient(135deg, #00897B 0%, #004D40 100%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.game-header {
+    color: white;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 40px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.room-number {
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding-right: 1.5rem;
+}
+
+.room-number::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    height: 20px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%);
+}
+
+.room-status {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+    animation: pulse 2s infinite;
+}
+
+.restart-options {
+    display: flex;
+    align-items: center;
+}
+
+.btn-restart {
+    background-color: rgba(231, 76, 60, 0.9);
+    color: white;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.btn-restart:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+.btn-restart i {
+    font-size: 0.9em;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 4px rgba(76, 175, 80, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .game-header {
+        padding: 0.4rem 1rem;
+    }
+    
+    .header-left {
+        gap: 1rem;
+    }
+    
+    .room-number {
+        font-size: 1.1rem;
+        padding-right: 1rem;
+    }
+    
+    .btn-restart {
+        padding: 0.3rem 0.8rem;
+    }
+}
+
+/* Header components styling */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    position: relative;
+}
+
+/* Common button styles */
+.header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.header-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.header-btn:hover::before {
+    opacity: 1;
+}
+
+.header-btn:active {
+    transform: translateY(1px);
+}
+
+.header-btn i {
+    font-size: 1em;
+    transition: transform 0.2s ease;
+}
+
+.header-btn span {
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* Leave button */
+.btn-leave {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.btn-leave:hover {
+    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+}
+
+.btn-leave:hover i {
+    transform: translateX(-2px);
+}
+
+/* Restart button */
+.btn-restart {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.btn-restart:hover {
+    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+}
+
+.btn-restart:hover i {
+    transform: rotate(180deg);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .header-btn {
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .header-btn span {
+        display: none;
+    }
+    
+    .header-btn i {
+        font-size: 1.1em;
+        margin: 0;
+    }
+}
+
+/* Room information styling */
+.room-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.5rem 0;
+}
+
+.room-status-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.room-basic-info {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    position: relative;
+}
+
+.room-basic-info::after {
+    content: '';
+    position: absolute;
+    right: -0.75rem;
+    height: 20px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.room-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.room-id {
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4FC3F7;
+    background: rgba(79, 195, 247, 0.1);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    min-width: 80px;
+    text-align: center;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 10px rgba(79, 195, 247, 0.3);
+}
+
+.room-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    animation: pulse 2s infinite;
+}
+
+.status-text {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 4px rgba(76, 175, 80, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .room-info {
+        gap: 1rem;
+    }
+
+    .room-status-wrapper {
+        gap: 1rem;
+    }
+
+    .room-id {
+        min-width: 60px;
+        font-size: 1rem;
+        padding: 0.15rem 0.4rem;
+    }
+
+    .room-label {
+        font-size: 0.8rem;
+    }
+
+    .status-text {
+        font-size: 0.8rem;
+    }
+}
+
+/* Optional: Add hover effect for room ID */
+.room-id {
+    transition: all 0.2s ease;
+}
+
+.room-id:hover {
+    background: rgba(79, 195, 247, 0.2);
+    transform: translateY(-1px);
+    cursor: pointer;
+}
+
+/* Button variations */
+.btn-start {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+}
+
+.btn-start:hover {
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.btn-god {
+    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+}
+
+.btn-god:hover {
+    box-shadow: 0 4px 8px rgba(155, 89, 182, 0.3);
+}
+
+.btn-god.active {
+    background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.btn-leave {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.btn-leave:hover {
+    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+}
+
+.btn-restart {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.btn-restart:hover {
+    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+}
+
+/* Header layout */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .header-btn {
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .header-btn span {
+        display: none;
+    }
+    
+    .header-btn i {
+        font-size: 1.1em;
+        margin: 0;
+    }
+    
+    .header-right {
+        gap: 0.5rem;
+    }
+}
+
+/* Container styles */
+.container {
+    width: 100%;
+    padding: 1rem;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+/* Player card styles */
+.player-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 0.5rem;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.player-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.player-name {
+    background: #2c3e50;
+    color: white;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Console message styles */
+.console-message {
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.05);
+    font-size: 0.9rem;
+    color: #2c3e50;
+}
+
+/* Game area styles */
+.game-page {
+    display: none;
+    background: #f5f6fa;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+.room-page {
+    display: none;
+    background: #f5f6fa;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+/* Player grid layout */
+.player-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+/* Console area styles */
+.console-area {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    margin: 1rem 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.console-area::-webkit-scrollbar {
+    width: 8px;
+}
+
+.console-area::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.console-area::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.console-area::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Text area styles */
+.text-area {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+/* Utility classes */
+.hidden {
+    display: none !important;
+}
+
+.visible {
+    display: block !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 0.5rem;
+    }
+    
+    .player-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.5rem;
+    }
+    
+    .player-name {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Game layout components */
+.event-container {
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.event-section {
+    margin: 0.5rem 0;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.player-list {
+    padding: 1rem;
+    margin: 1rem 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.game-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.console-section {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.chat-section {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chat-messages {
+    margin-bottom: 1rem;
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.chat-input {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.btn-send {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+}
+
+.btn-send:hover {
+    box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+}
+
+@media (max-width: 768px) {
+    .game-footer {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Button color variants */
+.btn-indigo {
+    background: #3f51b5;
+}
+
+.btn-indigo:hover {
+    background: #303f9f;
+    box-shadow: 0 4px 8px rgba(63, 81, 181, 0.3);
+}
+
+.btn-red {
+    background: #f44336;
+}
+
+.btn-red:hover {
+    background: #d32f2f;
+    box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+}
+
+.btn-green {
+    background: #4CAF50;
+}
+
+.btn-green:hover {
+    background: #388E3C;
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* Base button style */
+.header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Original w3.css colors */
+.btn-indigo {
+    background: #3f51b5;
+}
+
+.btn-indigo:hover {
+    background: #303f9f;
+}
+
+.btn-red {
+    background: #f44336;
+}
+
+.btn-red:hover {
+    background: #d32f2f;
+}
+
+.btn-green {
+    background: #4CAF50;
+}
+
+.btn-green:hover {
+    background: #388E3C;
+}
+
+/* Additional semantic colors */
+.btn-success {
+    background: #4CAF50;  /* Same as btn-green for consistency */
+}
+
+.btn-success:hover {
+    background: #388E3C;
+}
+
+.btn-danger {
+    background: #f44336;  /* Same as btn-red for consistency */
+}
+
+.btn-danger:hover {
+    background: #d32f2f;
+}
+
+.btn-primary {
+    background: #2196F3;
+}
+
+.btn-primary:hover {
+    background: #1976D2;
+}
+
+.btn-warning {
+    background: #ff9800;
+}
+
+.btn-warning:hover {
+    background: #f57c00;
+}
+
+/* Active states */
+.header-btn.active {
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.btn-indigo.active {
+    background: #283593;
+}
+
+.btn-primary.active {
+    background: #1565C0;
+}
+
+.btn-success.active,
+.btn-green.active {
+    background: #2E7D32;
+}
+
+.btn-danger.active,
+.btn-red.active {
+    background: #c62828;
+}
+
+.btn-warning.active {
+    background: #ef6c00;
+}
+
+/* Icon styling */
+.header-btn i {
+    font-size: 0.9em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .header-btn {
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .header-btn span {
+        display: none;
+    }
+    
+    .header-btn i {
+        font-size: 1.1em;
+        margin: 0;
+    }
+}
+
+/* Remove the dotted borders from header buttons */
+.header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1.2rem;
+    border: none;  /* Ensure no border */
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    outline: none;  /* Remove outline */
+    text-decoration: none;  /* Remove any text decoration */
+    box-shadow: none;  /* Remove any box shadow */
+}
+
+/* Remove any focus outline */
+.header-btn:focus {
+    outline: none;
+    border: none;
+}
+
+/* Update the header button styles */
+.header-btn {
+    /* ... existing styles ... */
+    -webkit-tap-highlight-color: transparent;  /* Remove tap highlight on mobile */
+    -webkit-touch-callout: none;  /* Disable callout */
+    -webkit-user-select: none;    /* Disable text selection */
+    user-select: none;
+    outline: none !important;      /* Force remove outline */
+}
+
+/* Handle all interactive states */
+.header-btn:focus,
+.header-btn:active,
+.header-btn:hover,
+.header-btn:visited {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+}
+
+/* Remove dotted Firefox outline */
+.header-btn::-moz-focus-inner {
+    border: 0;
+}
+
+a:focus, a:active {
+	outline: none;
+	-moz-outline-style: none;
+}
+
+/* Add this to your CSS */
+@supports (-webkit-appearance:none) {
+    .header-btn {
+        outline: none !important;
+        -webkit-appearance: none;
+    }
+
+    /* Chrome-specific focus styles */
+    .header-btn:focus-visible {
+        outline: none !important;
+    }
+
+    /* Remove Chrome's default focus ring */
+    .header-btn:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+}
+
+/* Base button styles */
+.header-btn {
+    /* ... existing styles ... */
+    -webkit-tap-highlight-color: transparent;
+    outline: none !important;
+}
+
+/* Global focus outline removal for Chrome */
+*:focus {
+    outline: none !important;
+}
+
+*:focus-visible {
+    outline: none !important;
+}
+
+/* Add these CSS rules */
+.no-outline {
+    outline: none !important;
+    border: none !important;
+}
+
+.no-outline:focus,
+.no-outline:active,
+.no-outline:hover {
+    outline: none !important;
+    border: none !important;
+}
+
+/* Chrome specific */
+.header-btn {
+    outline: none !important;
+    border: none !important;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.header-btn:not(.no-focus) {
+    outline: none !important;
+}
+
+/* Remove focus ring for mouse, but keep for keyboard */
+:focus:not(:focus-visible) { 
+    outline: none !important;
+}
+
+/* Global styles */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button {
+    outline: none !important;
+    border: none !important;
+}
+
+/* Update header button container styles */
+.header-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Update button styles */
+.header-btn {
+    display: inline-flex;  /* Change from flex to inline-flex */
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    outline: none;
+    flex-shrink: 0;  /* Prevent button from shrinking */
+}
+
+/* Fix for Chrome's focus outline on flex buttons */
+button {
+    position: relative;  /* Add this */
+    isolation: isolate;  /* Add this */
+}
+
+.header-btn {
+    position: relative;  /* Add this */
+    isolation: isolate;  /* Add this */
+    display: inline-flex;
+    /* ... rest of your existing styles ... */
+}
+
+/* Header container */
+.game-header-wrapper {
+    width: 100%;
+    background: #2c3e50;
+    position: fixed;  /* Fix header to top */
+    top: 0;
+    left: 0;
+    z-index: 1000;  /* Ensure header stays on top */
+}
+
+.game-header {
+    width: 100%;
+    padding: 1rem 2rem;  /* Add horizontal padding */
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+/* Add padding to the page content to account for fixed header */
+.page {
+    padding-top: 64px;  /* Adjust this value based on your header height */
+}
