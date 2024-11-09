@@ -634,12 +634,25 @@
 	};
 
 	socket.on('message', function (data) {
-		var text = document.createElement("div") ;
-		notificationUser(data.user + " : " + data.text);
-		text.innerHTML = data.user + " : " + data.text ;
-		document.getElementById("textArea").appendChild(text);
-		document.getElementById("textArea").scrollTop = document.getElementById("textArea").scrollHeight;
-	}); 
+		const messageDiv = document.createElement('div');
+		messageDiv.classList.add('chat-message');
+		
+		const timestamp = new Date().toLocaleTimeString();
+		
+		messageDiv.innerHTML = `
+			<span class="username">${data.user}</span>
+			<span class="message">${data.text}</span>
+			<span class="timestamp">${timestamp}</span>
+		`;
+		
+		const textArea = document.getElementById('textArea');
+		textArea.appendChild(messageDiv);
+		textArea.scrollTop = textArea.scrollHeight;
+		
+		// Keep existing notification
+		notificationUser(`${data.user} : ${data.text}`);
+	});
+
 	socket.on('messageFail', function (data) {
 		if ( data.status === 1 ){
 			alert("請輸入合法字元！") ;
@@ -1260,4 +1273,57 @@
 		button.addEventListener("click", clickHandler);
 		return button;
 	}
+
+	// Add these functions to handle chat messages
+	function addChatMessage(username, message, isSystem = false) {
+		const messageDiv = document.createElement('div');
+		messageDiv.classList.add('chat-message');
+		if (isSystem) messageDiv.classList.add('system');
+		
+		const timestamp = new Date().toLocaleTimeString();
+		
+		messageDiv.innerHTML = `
+			${!isSystem ? `<span class="username">${username}</span>` : ''}
+			<span class="message">${message}</span>
+			<span class="timestamp">${timestamp}</span>
+		`;
+		
+		const chatMessages = document.getElementById('textArea');
+		chatMessages.appendChild(messageDiv);
+		chatMessages.scrollTop = chatMessages.scrollHeight;
+	}
+
+	// Update the existing chat input handling
+	document.getElementById('textInput').addEventListener('keypress', function(e) {
+		if (e.key === 'Enter') {
+			sendMessage();
+		}
+	});
+
+	document.getElementById('textButton').addEventListener('click', sendMessage);
+
+	function sendMessage() {
+		const input = document.getElementById('textInput');
+		const message = input.value.trim();
+		
+		if (message) {
+			// Assuming you have a socket connection and username
+			socket.emit('chat message', {
+				username: currentUsername,
+				message: message
+			});
+			
+			input.value = '';
+		}
+	}
+
+	// Handle incoming messages
+	socket.on('chat message', function(data) {
+		addChatMessage(data.username, data.message);
+	});
+
+	// Handle system messages
+	socket.on('system message', function(message) {
+		addChatMessage(null, message, true);
+	});
 })();
