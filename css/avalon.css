@@ -109,3 +109,87 @@ canvas{
 	width: 10vw ;
 	max-width: 30px ;
 }
+
+.login-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+}
+
+.login-section {
+    margin-bottom: 1.5rem;
+}
+
+.login-section label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #555;
+}
+
+.input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #006888;
+}
+
+.btn-recovery {
+    width: 100%;
+    margin-top: 0.5rem;
+    background-color: #4CAF50;
+}
+
+.btn-recovery:hover {
+    background-color: #45a049;
+}
+
+.warning-text {
+    color: #ff0000;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.tutorial-link {
+    display: block;
+    text-align: center;
+    color: #2196F3;
+    text-decoration: none;
+    margin: 1rem 0;
+}
+
+.tutorial-link:hover {
+    text-decoration: underline;
+}
+
+.recovery-section {
+    margin: 2rem 0;
+    text-align: center;
+}
