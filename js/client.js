@@ -140,21 +140,13 @@
 			// Add click handler for the entire room
 			if (!room.start) {
 				roomItem.onclick = function(e) {
-					// Don't trigger if clicking on password input
-					if (e.target.classList.contains('room-password')) {
+					// Only trigger if clicking on the room item itself or the join button
+					if (e.target.classList.contains('room-password') || 
+						e.target.closest('.room-password')) {
 						return;
 					}
 					
-					if (!isJoining) {
-						isJoining = true;
-						const passwordInput = document.getElementById("password" + room.number);
-						const passwordText = passwordInput ? passwordInput.value : "";
-						socket.emit("join", {
-							user: userName,
-							number: room.number,
-							password: passwordText
-						});
-					}
+					handleRoomJoin(room.number);
 				};
 			}
 
@@ -215,8 +207,10 @@
 				const joinButton = document.createElement("button");
 				joinButton.innerHTML = '<i class="fa fa-sign-in"></i> 進入';
 				joinButton.className = "btn btn-join";
-				joinButton.setAttribute("data-number", room.number);
-				
+				joinButton.onclick = function(e) {
+					e.stopPropagation(); // Prevent room click
+					handleRoomJoin(room.number);
+				};
 				roomActions.appendChild(joinButton);
 				roomItem.appendChild(roomActions);
 			}
@@ -239,10 +233,34 @@
 	}
 
 
-	document.getElementById("createButton").addEventListener("click",function(){
-		if ( isCreating === false ){
-			isCreating = true ;
-			createRoom();
+	document.getElementById("createButton").addEventListener("click", function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (!isCreating) {
+			isCreating = true;
+			const password = document.getElementById("passwordCreate").value;
+			socket.emit("create", { user: userName, password: password });
+		}
+	});
+
+	document.getElementById("joinButton").addEventListener("click", function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (!isJoining) {
+			isJoining = true;
+			const roomNumber = document.getElementById("roomInput").value;
+			const password = document.getElementById("passwordJoin").value;
+			
+			if (roomNumber === "") {
+				alert("請輸入房號！");
+				isJoining = false;
+			} else {
+				socket.emit("join", {
+					user: userName,
+					number: parseInt(roomNumber),
+					password: password
+				});
+			}
 		}
 	});
 
@@ -250,13 +268,6 @@
 		socket.emit("leave",{user:userName,number:roomNumber});
 	};
 
-	document.getElementById("joinButton").addEventListener("click",function(){
-		if ( isJoining === false ){
-			isJoining = true ;
-			roomNumber = document.getElementById("roomInput").value ;
-			socket.emit("join",{user:userName,number:roomNumber,password:document.getElementById("passwordJoin").value}) ;
-		}
-	});
 	socket.on("godResult",function (data){
 		notificationUser("女神結果出來了！");
 		document.getElementById("godArea").innerHTML = "" ;
@@ -739,7 +750,7 @@
 				var roleGuessDiv = makeRoleGuess(i);
 				tokenTopDiv.appendChild(roleGuessDiv) ;
 				if ( i === data.index ){
-					if ( data.c=== "梅林" || data.c === "好人" || data.c=== "派西維爾"){
+					if ( data.c=== "梅林" || data.c === "好" || data.c=== "派西維爾"){
 						gb = "g" ;
 						var campDiv = document.createElement("div") ;
 						var campImg = imgMap["good.jpg"].cloneNode(true) ;
@@ -1181,13 +1192,26 @@
 		boardCtx.drawImage(canvasMap["mission_token.png"],(92*(nowRound-1))+63,155);
 	}
 
-	var getNotice = function(){
-		socket.emit("notice",{});
+	// var getNotice = function(){
+	// 	socket.emit("notice",{});
+	// }
+
+	// socket.on("notice",function (data){
+	// 	document.getElementById("noticeDiv").innerHTML = "<br>作者公告：<br>" + data.notice ;
+	// })
+	// getNotice();
+
+	// Add this function definition
+	function handleRoomJoin(roomNumber) {
+		if (!isJoining) {
+			isJoining = true;
+			const passwordInput = document.getElementById("password" + roomNumber);
+			const passwordText = passwordInput ? passwordInput.value : "";
+			socket.emit("join", {
+				user: userName,
+				number: parseInt(roomNumber),
+				password: passwordText
+			});
+		}
 	}
-
-	socket.on("notice",function (data){
-		document.getElementById("noticeDiv").innerHTML = "<br>作者公告：<br>" + data.notice ;
-	})
-	getNotice();
-
 })();
